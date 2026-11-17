@@ -7,12 +7,11 @@ and a daily XP goal keep you consistent. When you can't talk, flip to
 
 ## Run it on Windows
 
-  python -m venv venv
-  venv\Scripts\activate
-  pip install -r requirements.txt
-  python app.py
-
-  ollama pull qwen2.5:3b
+  1. python -m venv venv
+  2. venv\Scripts\activate
+  3. pip install -r requirements.txt
+  4. python app.py
+  5. ollama pull qwen2.5:3b
 
 ## How it fits together
 
