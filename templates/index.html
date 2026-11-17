@@ -1,0 +1,1471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NihongoTalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,700&family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --red: #E5141B;
+    --red-deep: #9E0C11;
+    --black: #000000;
+    --ink: #FFFFFF;          /* text on black */
+    --grey: #B9B9B9;         /* secondary text on black */
+    --grey-dark: #5C5C5C;
+    --panel: #111111;
+    --good: #FFFFFF;
+
+    --f-display: "Anton", "Impact", "Arial Narrow Bold", sans-serif;
+    --f-jp-display: "Dela Gothic One", "Yu Gothic UI", "Meiryo", sans-serif;
+    --f-jp: "Zen Kaku Gothic New", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+    --f-ui: "Barlow Condensed", "Zen Kaku Gothic New", "Arial Narrow", "Segoe UI", sans-serif;
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--black); color: var(--ink); font: 500 18px/1.4 var(--f-ui); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
+  button:disabled { cursor: not-allowed; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .hidden { display: none !important; }
+  .jp { font-family: var(--f-jp); }
+  svg { display: block; }
+  code { font: 600 14px/1.4 Consolas, "Cascadia Mono", monospace; background: var(--black); color: var(--ink);
+         padding: 1px 6px; white-space: nowrap; }
+
+  /* Halftone dots, used as texture on the red fields. */
+  .halftone {
+    position: absolute; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(0,0,0,.42) 1.3px, transparent 1.8px);
+    background-size: 10px 10px;
+  }
+
+  /* ==================================================================
+     HOME: the menu screen
+     ================================================================== */
+  .home {
+    position: relative; min-height: 100vh; overflow: hidden; isolation: isolate;
+    background: var(--red); color: var(--black);
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+    grid-template-rows: auto 1fr auto; padding: 28px 48px 24px; gap: 8px 32px;
+  }
+  .home .halftone.a { inset: 0 45% 40% 0; -webkit-mask-image: linear-gradient(160deg, #000 0%, transparent 70%); mask-image: linear-gradient(160deg, #000 0%, transparent 70%); z-index: -1; }
+  .shard { position: absolute; z-index: -1; pointer-events: none; }
+  .shard.s1 { background: var(--black); inset: 0 0 0 52%; clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%, 9% 58%, 0 54%); }
+  .shard.s2 { background: var(--ink); inset: 0 0 0 49%; clip-path: polygon(19.5% 0, 21% 0, 2.4% 54.6%, 10.2% 58.6%, 1.6% 100%, 0 100%, 8.6% 59.4%, .6% 55.2%); }
+  .shard.s3 { background: var(--black); left: -60px; bottom: -40px; width: 52%; height: 120px; transform: rotate(-7deg); }
+
+  /* Status: streak calendar + streak count + daily goal */
+  .status { grid-column: 1; display: flex; align-items: flex-start; gap: 22px 30px; flex-wrap: wrap; }
+  .status-side { display: flex; flex-direction: column; gap: 6px; min-width: 220px; }
+
+  /* Streak calendar: the last six days, then today as a big tile.
+     A red 済 ("done") seal marks each day a lesson was finished. */
+  .cal { list-style: none; margin: 0; padding: 6px 14px 26px 0; display: flex; align-items: flex-end; gap: 7px;
+         transform: rotate(-5deg); --tile: var(--black); --tile-ink: var(--ink); }
+  .cd { position: relative; isolation: isolate; width: 46px; padding: 5px 0 8px; text-align: center; color: var(--tile-ink);
+        transform: rotate(var(--r, 0deg)); flex: none; }
+  .cd::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--tile);
+                clip-path: polygon(0 6%, 100% 0, 94% 100%, 5% 95%); }
+  .cd .dw { display: block; font: 400 13px/1.25 var(--f-jp-display); }
+  .cd .dn { display: block; font: 400 27px/1 var(--f-display); margin-top: 2px; }
+  .cd.missed { opacity: .42; }
+  .cd.today { width: auto; padding: 6px 20px 9px 14px; color: var(--black); text-align: left;
+              display: grid; grid-template-columns: auto auto; column-gap: 10px; align-items: end; }
+  .cd.today::before { background: var(--ink); clip-path: polygon(0 4%, 100% 0, 96% 100%, 3% 96%); }
+  .cd.today .mo { grid-column: 1 / -1; font: 700 16px/1 var(--f-jp); }
+  .cd.today .dn { grid-row: 2; font-size: 66px; margin: 0; letter-spacing: -.01em; }
+  .cd.today .dw { grid-row: 2; font-size: 22px; line-height: 1; background: var(--red); color: var(--ink); width: 36px; height: 36px;
+                  display: grid; place-items: center; transform: rotate(8deg); margin-bottom: 9px; }
+  /* Past days: the seal hangs just below the tile so the date stays readable. */
+  .seal { position: absolute; left: 50%; bottom: -23px; margin-left: -14px; width: 28px; height: 28px; border-radius: 50%;
+          background: var(--red); color: var(--ink); display: grid; place-items: center;
+          font: 400 15px/1 var(--f-jp-display); transform: rotate(-14deg); box-shadow: 0 0 0 2px var(--black); }
+  .cd.today .seal { left: auto; margin: 0; right: -30px; bottom: -22px; width: 58px; height: 58px; font-size: 29px; background: rgba(255,255,255,.55);
+                    color: var(--red); border: 4px solid var(--red); box-shadow: none; transform: rotate(-16deg); }
+  .seal.stamp-in { animation: stamp-in .55s cubic-bezier(.2, 1.5, .4, 1) .2s both; }
+  @keyframes stamp-in { from { transform: scale(2.8) rotate(-40deg); opacity: 0; } 55% { opacity: 1; } }
+
+  .streak { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; transform: rotate(-3deg); margin-top: 6px; }
+  .flame { width: 46px; height: 46px; color: rgba(0,0,0,.35); }
+  .flame.on { color: var(--black); }
+  .streak-num { font: 400 58px/.9 var(--f-display); }
+  .streak-label { font: 700 italic 20px/1 var(--f-ui); }
+  .streak-status { grid-column: 1 / -1; margin-top: 8px; font: 600 17px/1.3 var(--f-ui); max-width: 34ch; }
+  .goal { transform: rotate(-3deg); margin-top: 10px; min-width: 240px; }
+  .goal-head { display: flex; justify-content: space-between; gap: 12px; font: 700 17px/1 var(--f-ui); margin-bottom: 6px; }
+  .bar { height: 14px; background: var(--black); transform: skewX(-24deg); overflow: hidden; }
+  .bar > div { height: 100%; background: var(--ink); width: 0; transition: width .5s ease; }
+  .stats { display: flex; gap: 18px; margin: 8px 0 0; font: 600 16px/1.2 var(--f-ui); }
+  .stats div { display: flex; gap: 6px; align-items: baseline; }
+  .stats dt { opacity: .8; }
+  .stats dd { margin: 0; font: 400 22px/1 var(--f-display); }
+
+  /* The menu */
+  .menu { grid-column: 1; grid-row: 2; align-self: center; transform: rotate(-7deg); transform-origin: left center;
+          display: flex; flex-direction: column; align-items: flex-start; padding: 6px 0 10px 8px; margin-top: 30px; }
+  .mi {
+    position: relative; isolation: isolate; text-align: left; color: var(--black);
+    margin-left: calc(var(--x, 0) * 1px); padding: 4px 34px 8px 20px;
+    display: flex; align-items: baseline; gap: 14px; line-height: 1;
+    animation: mi-in .42s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  @keyframes mi-in { from { transform: translateX(-110%); opacity: 0; } }
+  .mi-jp { font: 400 clamp(32px, 3.9vw, 52px)/1.08 var(--f-jp-display); letter-spacing: .02em; white-space: nowrap; }
+  .mi-en { font: 700 italic clamp(17px, 1.5vw, 22px)/1 var(--f-ui); white-space: nowrap; }
+  .mi-desc { display: none; }
+  .mi::before, .mi::after { content: ""; position: absolute; z-index: -1; opacity: 0; transition: opacity .08s; }
+  .mi::after  { inset: -4px -10px -2px -8px; background: var(--ink); clip-path: polygon(2% 10%, 100% 0, 97% 100%, 0 86%); }
+  .mi::before { inset: 2px -2px 4px 2px; background: var(--black); clip-path: polygon(0 12%, 99% 0, 100% 90%, 3% 100%); z-index: 0; }
+  .mi > * { position: relative; z-index: 1; }
+  .mi.sel { color: var(--ink); }
+  .mi.sel::before, .mi.sel::after { opacity: 1; }
+  .mi.sel .mi-jp { text-shadow: 3px 3px 0 var(--red); }
+  .mi.sel .mi-en { color: var(--red); }
+  .mi:focus-visible { outline: none; }
+  .mi:focus-visible::after { background: var(--ink); box-shadow: inset 0 0 0 4px var(--red); }
+  .mi.settings { margin-top: 18px; }
+  .mi.settings .mi-jp { font-size: clamp(26px, 3vw, 38px); }
+
+  /* Detail panel on the black shard */
+  .detail { grid-column: 2; grid-row: 2; align-self: center; justify-self: end; width: min(440px, 100%);
+            color: var(--ink); transform: rotate(3deg); padding: 8px 8px 8px 24px; }
+  .detail .d-jp { font: 400 clamp(48px, 5.4vw, 76px)/1.05 var(--f-jp-display); letter-spacing: .03em; }
+  .detail .d-rd { font: 500 18px/1.3 var(--f-jp); color: var(--grey); margin-top: 6px; }
+  .detail .d-en { font: 400 34px/1.05 var(--f-display); color: var(--red); margin-top: 18px; letter-spacing: .01em; }
+  .detail .d-desc { font: 600 21px/1.35 var(--f-ui); margin-top: 8px; max-width: 30ch; }
+  .detail .d-meta { font: 600 17px/1.3 var(--f-ui); color: var(--grey); margin-top: 16px; }
+  .detail .d-go { display: inline-block; margin-top: 22px; background: var(--ink); color: var(--black); font: 700 italic 19px/1 var(--f-ui);
+                  padding: 8px 18px 9px; transform: skewX(-14deg); }
+  .detail .d-go span { display: inline-block; transform: skewX(14deg); }
+
+  .home-foot { grid-column: 1 / -1; grid-row: 3; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .brand { color: var(--ink); background: var(--black); padding: 6px 16px 8px; transform: rotate(-3deg) skewX(-10deg); display: inline-flex; gap: 10px; align-items: baseline; }
+  .brand > * { transform: skewX(10deg); display: inline-block; }
+  .brand .jp { font: 400 24px/1 var(--f-jp-display); }
+  .brand .en { font: 700 italic 17px/1 var(--f-ui); color: var(--red); }
+  .keys { font: 600 16px/1.3 var(--f-ui); color: var(--grey); text-align: right; }
+  .keys b { color: var(--ink); }
+
+  /* ==================================================================
+     SETTINGS DRAWER
+     ================================================================== */
+  .drawer { position: fixed; inset: 0; z-index: 30; }
+  .drawer-scrim { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
+  .drawer-panel {
+    position: absolute; top: 0; right: 0; bottom: 0; width: min(440px, 100%); overflow-y: auto;
+    background: var(--black); color: var(--ink); padding: 28px 28px 32px 44px;
+    clip-path: polygon(24px 0, 100% 0, 100% 100%, 0 100%); border-left: 0;
+    animation: drawer-in .2s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes drawer-in { from { transform: translateX(40px); opacity: 0; } }
+  .drawer-panel::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 30px; background: var(--red);
+                          clip-path: polygon(24px 0, 30px 0, 6px 100%, 0 100%); }
+  .drawer-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .drawer-head h2 { margin: 0; display: flex; align-items: baseline; gap: 12px; }
+  .drawer-head h2 .jp { font: 400 34px/1 var(--f-jp-display); }
+  .drawer-head h2 .en { font: 400 26px/1 var(--f-display); color: var(--red); }
+  .x { font: 700 italic 18px/1 var(--f-ui); background: var(--ink); color: var(--black); padding: 7px 14px 8px; transform: skewX(-14deg); }
+
+  .group { margin-top: 26px; }
+  .group-title { font: 400 22px/1 var(--f-display); color: var(--red); margin-bottom: 10px; letter-spacing: .02em; }
+  .engine-list { display: flex; flex-direction: column; gap: 8px; }
+  .engine { text-align: left; width: 100%; padding: 10px 16px 11px 20px; background: var(--panel); transform: skewX(-8deg); position: relative; }
+  .engine > * { transform: skewX(8deg); }
+  .engine b { display: block; font: 700 20px/1.2 var(--f-ui); }
+  .engine span { display: block; font: 500 16px/1.3 var(--f-ui); color: var(--grey); }
+  .engine.active { background: var(--red); }
+  .engine.active span { color: var(--ink); }
+  .engine:not(.active):hover { background: #222; }
+  .hint { font: 500 16px/1.45 var(--f-ui); color: var(--grey); margin-top: 10px; }
+
+  .seg { display: flex; gap: 6px; }
+  .seg button { flex: 1; padding: 8px 6px 9px; font: 700 18px/1 var(--f-ui); background: var(--panel); color: var(--grey); transform: skewX(-14deg); }
+  .seg button > span, .seg button { white-space: nowrap; }
+  .seg button.active { background: var(--ink); color: var(--black); }
+  .seg button:not(.active):hover { color: var(--ink); }
+
+  .toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 9px 0; font: 600 19px/1.25 var(--f-ui); cursor: pointer; }
+  .toggle input { appearance: none; -webkit-appearance: none; width: 46px; height: 22px; flex: none; margin: 0; cursor: pointer;
+                  background: #2A2A2A; position: relative; transform: skewX(-14deg); transition: background .15s; }
+  .toggle input::after { content: ""; position: absolute; top: 3px; left: 4px; width: 16px; height: 16px; background: var(--grey); transition: transform .15s, background .15s; }
+  .toggle input:checked { background: var(--red); }
+  .toggle input:checked::after { transform: translateX(22px); background: var(--ink); }
+  .credit { margin-top: 34px; font: 500 15px/1.45 var(--f-ui); color: var(--grey); }
+  .credit a { color: inherit; }
+
+  /* ==================================================================
+     CONVERSATION: dialog boxes
+     ================================================================== */
+  .conv-wrap { position: relative; min-height: 100vh; isolation: isolate; overflow-x: clip; }
+  .conv-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--black); }
+  .conv-bg .red { position: absolute; inset: 0 0 0 auto; width: 34%; background: var(--red-deep);
+                  clip-path: polygon(38% 0, 100% 0, 100% 100%, 0 100%); }
+  .conv-bg .red2 { position: absolute; inset: 0 0 0 auto; width: 26%; background: var(--red);
+                   clip-path: polygon(52% 0, 100% 0, 100% 100%, 18% 100%); }
+  .conv-bg .halftone { inset: 0 0 0 auto; width: 30%; -webkit-mask-image: linear-gradient(to left, #000, transparent); mask-image: linear-gradient(to left, #000, transparent); }
+
+  .conv { max-width: 860px; margin: 0 auto; padding: 0 32px; min-height: 100vh; display: flex; flex-direction: column; }
+  /* Solid header with a slanted bottom edge, so lines scroll cleanly under it. */
+  .conv-head { position: sticky; top: 0; z-index: 5; padding: 16px 0 26px; background: var(--black);
+               clip-path: polygon(0 0, 100% 0, 100% 78%, 0 100%); }
+  .conv-top { display: flex; align-items: center; gap: 18px; }
+  .back { display: inline-flex; align-items: center; gap: 2px; background: var(--ink); color: var(--black);
+          font: 700 italic 18px/1 var(--f-ui); padding: 7px 16px 8px 10px; transform: skewX(-14deg); }
+  .back > * { transform: skewX(14deg); }
+  .back svg { width: 18px; height: 18px; }
+  .back:hover { background: var(--red); color: var(--ink); }
+  .conv-title { flex: 1; display: flex; align-items: baseline; gap: 14px; min-width: 0; transform: rotate(-2deg); }
+  .conv-title .jp { font: 400 30px/1.1 var(--f-jp-display); white-space: nowrap; }
+  .conv-title .en { font: 700 italic 19px/1 var(--f-ui); color: var(--red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .xp-pill { font: 400 22px/1 var(--f-display); background: var(--red); color: var(--ink); padding: 6px 14px 7px; transform: skewX(-14deg) rotate(-3deg); white-space: nowrap; }
+
+  /* progress: one slanted segment per reply */
+  .route { margin-top: 14px; display: flex; align-items: center; gap: 16px; }
+  .track { flex: 1; height: 12px; position: relative; }
+  .track .rail-line, .track .run { display: none; }
+  .stops { position: absolute; inset: 0; display: flex; gap: 6px; padding: 0 6px; }
+  .stop { flex: 1; background: #2E2E2E; transform: skewX(-32deg); transition: background .25s; }
+  .stop.passed { background: var(--red); }
+  .stop.here { background: var(--ink); }
+  .route-label { font: 600 17px/1 var(--f-ui); color: var(--grey); white-space: nowrap; }
+
+  .chat { flex: 1; padding: 30px 0 28px; display: flex; flex-direction: column; gap: 30px; }
+
+  /* A dialog box = white outline polygon + black fill polygon + a nameplate. */
+  .line-ai, .line-me { position: relative; max-width: 680px; }
+  .line-me { align-self: flex-end; max-width: 560px; }
+  .box { position: relative; isolation: isolate; padding: 24px 70px 20px 30px; }
+  .box::before, .box::after { content: ""; position: absolute; }
+  .box::before { inset: 0; background: var(--ink); z-index: -2; clip-path: polygon(0 7%, 100% 0, 98.5% 100%, 1.5% 92%); }
+  .box::after  { inset: 4px; background: var(--black); z-index: -1; clip-path: polygon(0 7%, 100% 0, 98.5% 100%, 1.5% 92%); }
+  .line-me .box { padding: 22px 30px 18px 34px; }
+  .line-me .box::before { clip-path: polygon(0 0, 100% 8%, 98% 92%, 2% 100%); }
+  .line-me .box::after  { background: var(--red); clip-path: polygon(0 0, 100% 8%, 98% 92%, 2% 100%); }
+
+  .plate { position: absolute; z-index: 2; top: -18px; left: 22px; background: var(--ink); color: var(--black);
+           padding: 3px 18px 5px 14px; transform: rotate(-4deg) skewX(-12deg); display: inline-flex; gap: 10px; align-items: baseline; white-space: nowrap; }
+  .plate > * { transform: skewX(12deg); display: inline-block; }
+  .plate .p-jp { font: 400 20px/1.1 var(--f-jp-display); }
+  .plate .p-en { font: 700 italic 15px/1 var(--f-ui); color: var(--red); }
+  .line-me .plate { left: auto; right: 22px; background: var(--black); color: var(--ink); transform: rotate(3deg) skewX(12deg); }
+  .line-me .plate > * { transform: skewX(-12deg); }
+  .line-me .plate .p-en { color: var(--red); }
+
+  .box .rd { font: 500 14px/1.4 var(--f-jp); color: var(--grey); margin-bottom: 2px; }
+  .box .jp-text { font: 700 25px/1.5 var(--f-jp); letter-spacing: .03em; }
+  .box .en { font: 600 18px/1.35 var(--f-ui); color: var(--grey); margin-top: 6px; }
+  .line-me .box .rd, .line-me .box .en { color: rgba(255,255,255,.82); }
+  .line-me .box .jp-text { font-size: 21px; }
+  .line-ai:not(.latest) .box { opacity: .62; }
+  .line-ai:not(.latest) .box .jp-text { font-size: 21px; }
+
+  .play { position: absolute; top: 18px; right: 22px; width: 38px; height: 38px; display: grid; place-items: center;
+          background: var(--red); color: var(--ink); transform: rotate(45deg); }
+  .play svg { width: 18px; height: 18px; transform: rotate(-45deg); }
+  .play:hover { background: var(--ink); color: var(--black); }
+  .next { position: absolute; right: 26px; bottom: 14px; width: 0; height: 0; border-left: 9px solid transparent;
+          border-right: 9px solid transparent; border-top: 13px solid var(--red); animation: nudge 1s ease-in-out infinite; }
+  @keyframes nudge { 50% { transform: translateY(4px); } }
+
+  .fb { position: relative; margin: 26px 0 0 auto; max-width: 520px; background: var(--ink); color: var(--black);
+        padding: 18px 22px 14px; clip-path: polygon(0 0, 100% 6%, 99% 100%, 1% 94%); font: 600 18px/1.35 var(--f-ui); }
+  .fb-tag { display: inline-block; background: var(--black); color: var(--ink); font: 700 italic 15px/1 var(--f-ui);
+            padding: 4px 12px 5px; transform: skewX(-14deg); margin-bottom: 8px; }
+  .fb.good .fb-tag { background: var(--red); }
+  .fb .better { font: 700 22px/1.45 var(--f-jp); letter-spacing: .02em; }
+  .fb .better-rd { font: 500 13px/1.4 var(--f-jp); color: var(--grey-dark); }
+  .fb .better + div:not(.better-rd), .fb .better-rd + div { margin-top: 6px; }
+
+  .typing { display: flex; gap: 8px; padding: 6px 0 0 30px; }
+  .typing i { width: 10px; height: 22px; background: var(--red); transform: skewX(-24deg); animation: bob 1s infinite ease-in-out; }
+  .typing i:nth-child(2) { animation-delay: .12s; }
+  .typing i:nth-child(3) { animation-delay: .24s; }
+  @keyframes bob { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+  .error-panel { background: var(--ink); color: var(--black); padding: 14px 18px; display: flex; gap: 14px; align-items: center; justify-content: space-between;
+                 clip-path: polygon(0 0, 100% 5%, 99% 100%, 1% 95%); }
+  .error-panel p { margin: 0; font: 600 18px/1.35 var(--f-ui); color: var(--red-deep); }
+
+  /* Dock */
+  .dock { position: sticky; bottom: 0; z-index: 5; padding: 0 0 18px; }
+  .dock-inner { position: relative; isolation: isolate; padding: 22px 22px 18px; }
+  .dock-inner::before { content: ""; position: absolute; inset: 0; z-index: -2; background: var(--ink); clip-path: polygon(0 12px, 100% 0, 100% 100%, 0 100%); }
+  .dock-inner::after  { content: ""; position: absolute; inset: 4px 0 0; z-index: -1; background: var(--panel); clip-path: polygon(0 12px, 100% 0, 100% 100%, 0 100%); }
+  .dock-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+  .mode { width: 270px; }
+  .dock-note { font: 600 16px/1.3 var(--f-ui); color: var(--grey); text-align: right; }
+
+  .prompt { background: var(--ink); color: var(--black); padding: 12px 16px; margin-bottom: 14px; clip-path: polygon(0 0, 100% 4%, 99.5% 100%, .5% 96%); }
+  .prompt .label { font: 700 italic 15px/1 var(--f-ui); color: var(--red); }
+  .prompt .target { font: 700 22px/1.25 var(--f-ui); margin-top: 4px; }
+  .prompt .reveal-jp { font: 700 22px/1.45 var(--f-jp); margin-top: 6px; }
+  .prompt .reveal-rd { font: 500 14px/1.4 var(--f-jp); color: var(--grey-dark); }
+  .linkbtn { margin-top: 6px; font: 700 italic 17px/1 var(--f-ui); background: var(--black); color: var(--ink); padding: 6px 12px 7px; transform: skewX(-12deg); }
+  .linkbtn:hover { background: var(--red); }
+
+  .compose { display: flex; gap: 12px; align-items: flex-end; }
+  .mic { width: 48px; height: 48px; flex: none; display: grid; place-items: center; background: var(--red); color: var(--ink); transform: rotate(45deg) scale(.86); margin: 0 4px; }
+  .mic svg { width: 22px; height: 22px; transform: rotate(-45deg); }
+  .mic:hover { background: var(--ink); color: var(--black); }
+  .mic.live { background: var(--ink); color: var(--red); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(229,20,27,.5); } }
+  textarea { flex: 1; min-width: 0; width: 100%; resize: none; font: 700 19px/1.45 var(--f-jp); color: var(--black); background: var(--ink);
+             border: 0; border-radius: 0; padding: 12px 14px; min-height: 50px; max-height: 140px; }
+  textarea:focus { outline: 3px solid var(--red); outline-offset: 0; }
+  textarea::placeholder { color: #777; font: 600 18px/1.45 var(--f-ui); }
+  .btn { height: 50px; padding: 0 22px; font: 400 22px/1 var(--f-display); letter-spacing: .02em; background: var(--red); color: var(--ink);
+         transform: skewX(-12deg); white-space: nowrap; }
+  .btn:hover:not(:disabled) { background: var(--ink); color: var(--black); }
+  .btn:disabled { opacity: .4; }
+  .btn.ghost { background: var(--ink); color: var(--black); }
+  .btn.ghost:hover:not(:disabled) { background: var(--red); color: var(--ink); }
+  .btn.sm { height: 38px; font-size: 18px; padding: 0 16px; }
+  .mic-status { font: 600 16px/1.35 var(--f-ui); color: var(--grey); margin-top: 10px; }
+  .mic-status:empty { display: none; }
+  .mic-status.err { color: #FF8A8E; }
+
+  /* Response options */
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice { position: relative; isolation: isolate; display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: center;
+            width: 100%; text-align: left; cursor: pointer; padding: 10px 24px 11px 14px; color: var(--black);
+            transition: transform .12s ease-out; }
+  .choice::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); clip-path: polygon(0 0, 100% 6%, 98.5% 100%, 1% 92%); transition: background .1s; }
+  .choice:nth-child(even)::before { clip-path: polygon(1% 6%, 99% 0, 100% 94%, 0 100%); }
+  .choice:not(.wrong):not(.busy):hover { transform: translateX(10px); color: var(--ink); }
+  .choice:not(.wrong):not(.busy):hover::before { background: var(--red); }
+  .choice:not(.wrong):not(.busy):hover .rd, .choice:not(.wrong):not(.busy):hover .en { color: rgba(255,255,255,.85); }
+  .choice.wrong, .choice.busy { cursor: default; }
+  .choice .key { width: 34px; height: 34px; display: grid; place-items: center; background: var(--black); color: var(--ink);
+                 transform: rotate(45deg); cursor: inherit; margin-left: 4px; }
+  .choice .key-n { transform: rotate(-45deg); font: 400 20px/1 var(--f-display); }
+  .choice .jp-text { font: 700 21px/1.45 var(--f-jp); letter-spacing: .02em; }
+  .choice .rd { font: 500 13px/1.4 var(--f-jp); color: var(--grey-dark); }
+  .choice .en { font: 600 17px/1.3 var(--f-ui); color: var(--grey-dark); }
+  .choice.wrong { color: var(--grey); }
+  .choice.wrong::before { background: #2A2A2A; }
+  .choice.wrong .rd, .choice.wrong .en { color: var(--grey-dark); }
+  .choice.wrong .key { background: var(--red); }
+  .why { font: 700 19px/1.35 var(--f-ui); color: var(--ink); background: var(--red); padding: 8px 14px 9px; clip-path: polygon(0 0, 100% 8%, 99% 100%, 1% 92%); }
+  .waiting { font: 600 17px/1.3 var(--f-ui); color: var(--grey); padding: 8px 2px; }
+
+  /* Scene complete */
+  .finished { padding: 4px 4px 2px; }
+  .finished h3 { margin: 0 0 6px; display: inline-block; font: 400 clamp(40px, 6vw, 64px)/1 var(--f-display); color: var(--ink);
+                 background: var(--red); padding: 6px 26px 10px 18px; transform: rotate(-4deg) skewX(-10deg); letter-spacing: .01em; }
+  .fin-cal { --tile: #2E2E2E; transform: rotate(-3deg); margin: 22px 0 0 4px; }
+  .finished p { margin: 16px 0 14px; color: var(--grey); font: 600 19px/1.4 var(--f-ui); }
+  .finished .stats { gap: 26px; margin: 0 0 18px; color: var(--ink); font-size: 18px; }
+  .finished .stats dd { font-size: 34px; color: var(--red); }
+  .finished .actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  /* ==================================================================
+     WORD LOOKUP
+     ================================================================== */
+  .w { all: unset; cursor: pointer; padding: 0 1px; margin: 0 -1px; -webkit-tap-highlight-color: transparent; }
+  .w:hover, .w.open { background: var(--red); color: var(--ink); box-shadow: 0 0 0 1px var(--red); }
+  .line-me .w:hover, .line-me .w.open { background: var(--black); box-shadow: 0 0 0 1px var(--black); }
+  .w:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
+  @media (hover: none) {
+    .w { text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 6px; margin: 0 2px; padding: 1px 0; }
+  }
+  .wpop {
+    position: fixed; z-index: 40; width: min(350px, calc(100vw - 32px)); max-height: min(440px, calc(100vh - 32px)); overflow-y: auto;
+    background: var(--ink); color: var(--black); border: 3px solid var(--black);
+    box-shadow: 8px 8px 0 var(--red); padding: 0 0 16px; animation: pop-in .12s ease-out;
+  }
+  .wpop:focus { outline: none; }
+  @keyframes pop-in { from { opacity: 0; transform: translate(-6px, -6px); } }
+  .wpop .top { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; background: var(--black); color: var(--ink);
+               padding: 12px 16px 14px; clip-path: polygon(0 0, 100% 0, 100% 82%, 0 100%); }
+  .wpop .word { font: 400 30px/1.2 var(--f-jp-display); letter-spacing: .03em; overflow-wrap: anywhere; }
+  .wpop .wrd { font: 500 15px/1.3 var(--f-jp); color: var(--grey); margin-top: 2px; }
+  .wpop .play { position: static; width: 34px; height: 34px; margin-right: 6px; }
+  .wpop .pos { font: 700 italic 16px/1 var(--f-ui); color: var(--red); margin: 10px 16px 0; }
+  .wpop .base { font: 600 17px/1.3 var(--f-ui); margin: 6px 16px 0; }
+  .wpop .base .jp { font: 700 19px/1.3 var(--f-jp); }
+  .wpop .form { font: 700 16px/1.3 var(--f-ui); background: var(--black); color: var(--ink); padding: 6px 12px 7px; margin: 10px 16px 0; transform: skewX(-8deg); }
+  .wpop .senses { margin: 12px 16px 0; padding: 12px 0 0 20px; border-top: 3px solid var(--black); font: 600 18px/1.35 var(--f-ui); }
+  .wpop div.senses { padding-left: 0; }
+  .wpop .senses li + li { margin-top: 6px; }
+  .wpop .senses li::marker { font-family: var(--f-display); color: var(--red); }
+  .wpop .none { color: var(--grey-dark); }
+
+  /* ==================================================================
+     SMALL SCREENS
+     ================================================================== */
+  @media (max-width: 880px) {
+    .home { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; padding: 18px 16px 20px; gap: 6px; }
+    /* On a phone the menu runs long, so the black shard only sits behind the footer. */
+    .shard.s1 { inset: auto 0 0 0; height: 120px; clip-path: polygon(0 45%, 100% 0, 100% 100%, 0 100%); }
+    .shard.s2 { display: none; }
+    .shard.s3 { display: none; }
+    .home .halftone.a { inset: 0 0 50% 0; }
+    .status { gap: 16px 20px; }
+    .cal .cd:not(.today):nth-child(-n+2) { display: none; }
+    .cd { width: 40px; }
+    .cd .dn { font-size: 23px; }
+    .cd.today .dn { font-size: 52px; }
+    .streak-num { font-size: 46px; }
+    .goal { min-width: 0; flex: 1 1 200px; }
+    .menu { grid-row: 2; transform: rotate(-4deg); padding: 18px 0 30px; }
+    .mi { margin-left: calc(var(--x, 0) * .35px); padding: 6px 22px 8px 14px; flex-wrap: wrap; row-gap: 2px; }
+    .mi-jp { font-size: 32px; }
+    .mi-en { font-size: 17px; }
+    .mi-desc { display: block; flex-basis: 100%; font: 600 15px/1.3 var(--f-ui); }
+    .mi:not(.sel) .mi-desc { opacity: .8; }
+    .detail { display: none; }
+    .home-foot { grid-row: 3; flex-direction: column; align-items: flex-start; padding-top: 40px; }
+    .brand { background: var(--red); }
+    .brand .en { color: var(--black); }
+    .keys { display: none; }
+
+    .conv { padding: 0 14px; }
+    .conv-bg .red { width: 46%; } .conv-bg .red2 { width: 30%; }
+    .conv-top { gap: 12px; }
+    .conv-title .jp { font-size: 22px; }
+    .conv-title .en { display: none; }
+    .xp-pill { font-size: 18px; }
+    .box { padding: 22px 58px 18px 20px; }
+    .box .jp-text { font-size: 21px; }
+    .line-me .box .jp-text, .line-ai:not(.latest) .box .jp-text { font-size: 19px; }
+    .play { right: 16px; width: 34px; height: 34px; }
+    .dock-inner { padding: 20px 14px 14px; }
+    .dock-top { flex-wrap: wrap; }
+    .mode { width: 100%; }
+    .dock-note { text-align: left; }
+    .choice { padding: 9px 16px 10px 10px; gap: 10px; grid-template-columns: 36px 1fr; }
+    .choice .jp-text { font-size: 19px; }
+    .btn { padding: 0 16px; }
+    .drawer-panel { padding: 22px 20px 28px 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Icons -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-flame" viewBox="0 0 24 24"><path fill="currentColor" d="M12.6 2.2c.3 2.6-.7 4.4-2 5.9-1.4 1.6-3.1 3.1-3.1 6 0 .9.2 1.7.6 2.4-.9-.6-1.7-1.6-2-2.9-1.4 1.6-2.1 3.3-2.1 4.9C4 21.8 7.6 24 12 24s8-2.3 8-6.9c0-4.4-2.6-7.3-4.5-9.6-1.2-1.4-2.2-2.8-2.9-5.3Zm-.4 19.6c-1.9 0-3.4-1.3-3.4-3.2 0-2 1.6-3 2.6-4.4.3 1.3 1.2 2 2 2.6.4-.8.5-1.6.4-2.5 1.2 1.1 1.9 2.6 1.9 4.3 0 1.9-1.6 3.2-3.5 3.2Z"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></g></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></g></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" fill="currentColor"/></symbol>
+</svg>
+
+<!-- ================= HOME: menu screen ================= -->
+<section id="home" class="home">
+  <div class="halftone a" aria-hidden="true"></div>
+  <div class="shard s1" aria-hidden="true"></div>
+  <div class="shard s2" aria-hidden="true"></div>
+  <div class="shard s3" aria-hidden="true"></div>
+
+  <header class="status">
+    <ol class="cal" id="homeCal" aria-label="Lessons finished in the last 7 days"></ol>
+    <div class="status-side">
+    <section class="streak" aria-label="Streak">
+      <svg class="flame" id="flame" aria-hidden="true"><use href="#i-flame"/></svg>
+      <div>
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="streak-label" id="streakLabel">day streak</div>
+      </div>
+      <div class="streak-status" id="todayStatus"></div>
+    </section>
+    <section class="goal" aria-label="Daily goal">
+      <div class="goal-head"><span>Today's goal</span><span id="goalText">0 / 30 XP</span></div>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="30" id="goalBar"><div id="goalFill"></div></div>
+      <dl class="stats">
+        <div><dt>Best</dt><dd id="bestStat">0</dd></div>
+        <div><dt>Total XP</dt><dd id="totalStat">0</dd></div>
+      </dl>
+    </section>
+    </div>
+  </header>
+
+  <nav class="menu" id="scenarioList" aria-label="Situations"></nav>
+
+  <aside class="detail" id="detail" aria-live="polite"></aside>
+
+  <footer class="home-foot">
+    <div class="brand"><span class="jp">日本語トーク</span><span class="en">NihongoTalk</span></div>
+    <div class="keys"><b>↑ ↓</b> choose &nbsp; <b>Enter</b> start</div>
+  </footer>
+</section>
+
+<!-- ================= CONVERSATION ================= -->
+<div id="conv" class="conv-wrap hidden">
+  <div class="conv-bg" aria-hidden="true"><div class="red"></div><div class="red2"></div><div class="halftone"></div></div>
+  <section class="conv">
+    <header class="conv-head">
+      <div class="conv-top">
+        <button class="back" id="backBtn"><svg aria-hidden="true"><use href="#i-chevron-left"/></svg><span>Menu</span></button>
+        <div class="conv-title"><span class="jp" id="convJp"></span><span class="en" id="convEn"></span></div>
+        <span class="xp-pill" id="convXp">+0 XP</span>
+      </div>
+      <div class="route">
+        <div class="track" aria-hidden="true">
+          <div class="rail-line"></div><div class="run" id="routeRun"></div>
+          <div class="stops" id="routeStops"></div>
+        </div>
+        <span class="route-label" id="routeLabel"></span>
+      </div>
+    </header>
+
+    <div class="chat" id="chat" aria-live="polite"></div>
+
+    <div class="dock">
+      <div class="dock-inner">
+        <div id="finished" class="finished hidden">
+          <h3>Scene complete!</h3>
+          <ol class="cal fin-cal" id="finCal" aria-label="Lessons finished in the last 7 days"></ol>
+          <p id="finishedLine"></p>
+          <dl class="stats">
+            <div><dt>XP earned</dt><dd id="finXp">0</dd></div>
+            <div><dt>Streak</dt><dd id="finStreak">0</dd></div>
+          </dl>
+          <div class="actions">
+            <button class="btn" id="againBtn">Practice again</button>
+            <button class="btn ghost" id="doneBtn">Back to menu</button>
+          </div>
+        </div>
+
+        <div id="answerArea">
+          <div class="dock-top">
+            <div class="seg mode" role="group" aria-label="Answer mode">
+              <button id="modeSpeak">Speak</button>
+              <button id="modeTap">Tap answers</button>
+            </div>
+            <span class="dock-note" id="dockNote"></span>
+          </div>
+
+          <div id="choices" class="choices hidden"></div>
+
+          <div id="speakbar" class="hidden">
+            <div id="promptBox" class="prompt hidden"></div>
+            <div class="compose">
+              <button class="mic" id="micBtn" aria-label="Start speaking"><svg aria-hidden="true"><use href="#i-mic"/></svg></button>
+              <textarea id="draft" rows="1" placeholder="Speak, or type your reply in Japanese"></textarea>
+              <button class="btn" id="sendBtn">Send</button>
+            </div>
+            <div id="micStatus" class="mic-status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= SETTINGS DRAWER ================= -->
+<div id="drawer" class="drawer hidden" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+  <div class="drawer-scrim" id="drawerScrim"></div>
+  <div class="drawer-panel">
+    <div class="drawer-head">
+      <h2 id="drawerTitle"><span class="jp">設定</span><span class="en">Settings</span></h2>
+      <button class="x" id="drawerClose">Close</button>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Tutor</div>
+      <div class="engine-list" id="engineList"></div>
+      <div class="hint hidden" id="ollamaHint"></div>
+    </div>
+
+    <div class="group" id="levelBox">
+      <div class="group-title">Level</div>
+      <div class="seg" id="levelSeg"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Display</div>
+      <label class="toggle"><span>Start in tap-to-answer mode</span><input type="checkbox" id="quietToggle"></label>
+      <label class="toggle"><span>Show hiragana reading</span><input type="checkbox" id="readingToggle"></label>
+      <label class="toggle"><span>Show English translation</span><input type="checkbox" id="englishToggle"></label>
+      <label class="toggle"><span>Read tutor lines aloud</span><input type="checkbox" id="autoSpeakToggle"></label>
+    </div>
+
+    <p class="credit">Word meanings from <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener">JMdict</a> by EDRDG, used under CC BY-SA 4.0.</p>
+  </div>
+</div>
+
+<div id="wordPop" class="wpop hidden" role="dialog" aria-label="Word meaning" tabindex="-1"></div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const STORE = "nihongo_state_v1";
+const DAILY_GOAL = 30;
+const MAX_EXCHANGES = 8;
+const XP = { spoken: 5, choice: 3, finish: 10 };
+
+// How each situation appears on the menu, and who you're talking to in it.
+const SIGNS = {
+  greetings:  { jp: "自己紹介",   rd: "じこしょうかい", desc: "Introduce yourself and make small talk.", who: ["ゆき", "Yuki"] },
+  cafe:       { jp: "カフェ",     rd: "かふぇ",         desc: "Order a drink, pick a size, and pay.",   who: ["店員", "Barista"] },
+  directions: { jp: "道案内",     rd: "みちあんない",   desc: "Ask how to get to the station.",          who: ["地元の人", "Local"] },
+  restaurant: { jp: "ラーメン屋", rd: "らーめんや",     desc: "Get seated, order, and say the right thing before eating.", who: ["店員", "Waiter"] },
+  shopping:   { jp: "買い物",     rd: "かいもの",       desc: "Find a shirt, ask the price and size.",   who: ["店員", "Clerk"] },
+  friend:     { jp: "友だちと",   rd: "ともだちと",     desc: "Catch up and make weekend plans.",        who: ["ハルト", "Haruto"] },
+};
+// Horizontal offsets that give the menu its staggered, hand-placed look.
+const MENU_X = [0, 64, 18, 92, 34, 76, 8];
+const DOW = ["日", "月", "火", "水", "木", "金", "土"];
+
+/* ---------- persistent state (streak, XP, settings) ---------- */
+const defaults = {
+  streak: 0, best: 0, totalXP: 0, xpToday: 0, xpDay: null, lastDay: null,
+  engine: null, level: "Beginner", quiet: false, showReading: true, showEnglish: true, autoSpeak: true,
+  practiced: [],   // days (YYYY-MM-DD) a lesson was finished, newest last
+};
+let state = Object.assign({}, defaults, JSON.parse(localStorage.getItem(STORE) || "{}"));
+const save = () => localStorage.setItem(STORE, JSON.stringify(state));
+
+// Dates as local YYYY-MM-DD strings, so "today" matches the user's own calendar.
+function dayKey(d = new Date()) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function yesterdayKey() { const d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
+
+// Older saves only stored the last day and the count. Rebuild the run of
+// practiced days from those so the calendar isn't blank after updating.
+if (!Array.isArray(state.practiced)) state.practiced = [];
+if (!state.practiced.length && state.lastDay && state.streak > 0) {
+  const [y, m, d] = state.lastDay.split("-").map(Number);
+  for (let i = state.streak - 1; i >= 0; i--) state.practiced.push(dayKey(new Date(y, m - 1, d - i)));
+}
+
+function refreshForNewDay() {
+  const today = dayKey();
+  if (state.xpDay !== today) { state.xpToday = 0; state.xpDay = today; }
+  if (state.lastDay && state.lastDay !== today && state.lastDay !== yesterdayKey()) state.streak = 0;
+  save();
+}
+
+// XP feeds the daily goal. It no longer touches the streak.
+function addXP(amount) {
+  refreshForNewDay();
+  state.xpToday += amount;
+  state.totalXP += amount;
+  save();
+  renderRail();
+}
+
+// The streak counts days on which you FINISHED a lesson. Finishing one today
+// stamps today: +1 if yesterday was stamped, otherwise the streak restarts at 1.
+// A second lesson on the same day doesn't count twice.
+let pendingHomeStamp = false;
+function completeLesson() {
+  refreshForNewDay();
+  const today = dayKey();
+  const before = state.streak;
+  const firstToday = state.lastDay !== today;
+  if (firstToday) {
+    state.streak = state.lastDay === yesterdayKey() ? state.streak + 1 : 1;
+    state.lastDay = today;
+    state.best = Math.max(state.best, state.streak);
+    if (!state.practiced.includes(today)) state.practiced.push(today);
+    state.practiced = state.practiced.slice(-60);
+    pendingHomeStamp = true;
+  }
+  save();
+  return { before, after: state.streak, firstToday };
+}
+
+// Draw the 7-day calendar into an <ol>. `stamp` animates today's seal.
+function renderCal(list, stamp = false) {
+  list.innerHTML = "";
+  const done = new Set(state.practiced);
+  const tilt = [-3, 2, -1, 3, -2, 1];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = dayKey(d);
+    const isToday = i === 0;
+    const li = el("li", "cd" + (isToday ? " today" : done.has(key) ? " done" : " missed"));
+    if (!isToday) li.style.setProperty("--r", tilt[i - 1] + "deg");
+    if (isToday) li.appendChild(el("span", "mo", `${d.getMonth() + 1}月`));
+    li.append(el("span", "dn", String(d.getDate())), el("span", "dw", DOW[d.getDay()]));
+    if (done.has(key)) {
+      const s = el("span", "seal" + (isToday && stamp ? " stamp-in" : ""), "済");
+      s.setAttribute("aria-hidden", "true");
+      li.appendChild(s);
+    }
+    li.setAttribute("aria-label", `${isToday ? "Today, " : ""}${d.getMonth() + 1}/${d.getDate()}: ${done.has(key) ? "lesson finished" : "no lesson"}`);
+    list.appendChild(li);
+  }
+}
+
+/* ---------- speech: text-to-speech and recognition ---------- */
+let jaVoice = null;
+function pickVoice() {
+  const voices = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("ja"));
+  // Prefer natural/online voices (Edge on Windows ships "Nanami"/"Keita" online voices).
+  jaVoice = voices.find((v) => /natural|online/i.test(v.name)) || voices[0] || null;
+}
+if ("speechSynthesis" in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.95;
+  speechSynthesis.speak(u);
+}
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognizer = null, listening = false;
+
+function micStatus(text, isErr = false) {
+  $("#micStatus").textContent = text;
+  $("#micStatus").classList.toggle("err", isErr);
+}
+
+function setListening(on) {
+  listening = on;
+  const b = $("#micBtn");
+  b.classList.toggle("live", on);
+  b.setAttribute("aria-label", on ? "Stop speaking" : "Start speaking");
+  b.querySelector("use").setAttribute("href", on ? "#i-stop" : "#i-mic");
+  micStatus(on ? "Listening. Press stop when you're done." : "");
+}
+
+function toggleMic() {
+  if (!SR) {
+    micStatus("Speech recognition needs Microsoft Edge or Google Chrome. You can still type, or tap answers.", true);
+    return;
+  }
+  if (listening) { recognizer.stop(); return; }
+  speechSynthesis.cancel();
+  recognizer = new SR();
+  recognizer.lang = "ja-JP";
+  recognizer.interimResults = true;
+  recognizer.continuous = false;
+  recognizer.onresult = (e) => {
+    let t = "";
+    for (const r of e.results) t += r[0].transcript;
+    $("#draft").value = t;
+  };
+  recognizer.onerror = (e) => {
+    setListening(false);
+    micStatus(e.error === "not-allowed"
+      ? "Microphone access is blocked. Allow it from the icon in the address bar, or tap answers instead."
+      : e.error === "no-speech" ? "No speech heard. Press the mic and try again." : "Microphone error: " + e.error, true);
+  };
+  recognizer.onend = () => { if (listening) setListening(false); };
+  try { recognizer.start(); setListening(true); } catch (err) { setListening(false); }
+}
+
+/* ---------- rail + home ---------- */
+let config = null;
+let lessons = null;
+const ENGINES = {
+  lessons: { name: "Guided lessons", desc: "Scripted conversations with checked answers. Works offline." },
+  ollama:  { name: "Free local AI",  desc: "Open-ended chat with a model running on your PC." },
+};
+
+function renderRail() {
+  // Only animate the seal when the home screen is actually showing.
+  const showStamp = pendingHomeStamp && !session;
+  renderCal($("#homeCal"), showStamp);
+  if (showStamp) pendingHomeStamp = false;
+  $("#streakNum").textContent = state.streak;
+  $("#streakLabel").textContent = "day streak";
+  const practiced = state.lastDay === dayKey();
+  $("#flame").classList.toggle("on", practiced);
+  const st = $("#todayStatus");
+  st.textContent = practiced
+    ? "Today is stamped. Your streak is safe."
+    : state.streak > 0 ? "Finish a lesson today to keep your streak." : "Finish a lesson to start your streak.";
+  st.classList.toggle("done", practiced);
+
+  $("#goalText").textContent = `${Math.min(state.xpToday, 999)} / ${DAILY_GOAL} XP`;
+  $("#goalFill").style.width = Math.min(100, (state.xpToday / DAILY_GOAL) * 100) + "%";
+  $("#goalBar").setAttribute("aria-valuenow", Math.min(state.xpToday, DAILY_GOAL));
+  $("#bestStat").textContent = state.best;
+  $("#totalStat").textContent = state.totalXP;
+}
+
+function renderSettings() {
+  $("#quietToggle").checked = state.quiet;
+  $("#readingToggle").checked = state.showReading;
+  $("#englishToggle").checked = state.showEnglish;
+  $("#autoSpeakToggle").checked = state.autoSpeak;
+
+  const list = $("#engineList");
+  list.innerHTML = "";
+  for (const eng of config.engines) {
+    const b = el("button", "engine" + (eng === state.engine ? " active" : ""));
+    b.setAttribute("aria-pressed", eng === state.engine);
+    b.append(el("b", null, ENGINES[eng].name), el("span", null, ENGINES[eng].desc));
+    b.onclick = () => { state.engine = eng; save(); renderSettings(); buildScenarioList(); renderDetail(); };
+    list.appendChild(b);
+  }
+
+  const hint = $("#ollamaHint");
+  hint.innerHTML = "";
+  if (!config.engines.includes("ollama")) {
+    const m = config.ollama.model;
+    hint.append(document.createTextNode(config.ollama.running
+      ? `Ollama is running, but ${m} isn't installed. Run `
+      : "For open-ended AI chat at no cost, install Ollama from ollama.com, then run "));
+    hint.append(el("code", null, `ollama pull ${m}`));
+    hint.append(document.createTextNode(" and refresh this page."));
+  }
+  hint.classList.toggle("hidden", config.engines.includes("ollama"));
+  $("#levelBox").classList.toggle("hidden", state.engine === "lessons");
+
+  const seg = $("#levelSeg");
+  seg.innerHTML = "";
+  for (const level of config.levels) {
+    const b = el("button", level === state.level ? "active" : "", level);
+    b.setAttribute("aria-pressed", level === state.level);
+    b.onclick = () => { state.level = level; save(); renderSettings(); };
+    seg.appendChild(b);
+  }
+}
+
+// The home menu: one big slanted item per situation, plus Settings.
+// Hovering or focusing an item selects it and fills the detail panel;
+// clicking or Enter starts it.
+let menuIndex = 0;
+
+function menuItems() { return [...$("#scenarioList").querySelectorAll(".mi")]; }
+
+function buildScenarioList() {
+  const list = $("#scenarioList");
+  list.innerHTML = "";
+  const items = [...config.scenarios.map((sc) => ({ sc })), { settings: true }];
+  items.forEach((it, i) => {
+    const b = el("button", "mi" + (it.settings ? " settings" : ""));
+    b.style.setProperty("--x", MENU_X[i % MENU_X.length]);
+    b.style.setProperty("--i", i);
+    if (it.settings) {
+      b.append(el("span", "mi-jp", "設定"), el("span", "mi-en", "Settings"),
+               el("span", "mi-desc", "Tutor, level and display options."));
+      b.onclick = openDrawer;
+    } else {
+      const s = SIGNS[it.sc.id] || { jp: it.sc.title, desc: "" };
+      b.append(el("span", "mi-jp", s.jp), el("span", "mi-en", it.sc.title), el("span", "mi-desc", s.desc));
+      b.onclick = () => startScenario(it.sc);
+    }
+    b.dataset.idx = i;
+    b.onmouseenter = () => selectMenu(i);
+    b.onfocus = () => selectMenu(i);
+    list.appendChild(b);
+  });
+  selectMenu(Math.min(menuIndex, items.length - 1));
+}
+
+function selectMenu(i) {
+  menuIndex = i;
+  menuItems().forEach((b, j) => b.classList.toggle("sel", j === i));
+  renderDetail();
+}
+
+function replyCount(id) {
+  return state.engine === "lessons" && lessons[id] ? `${lessons[id].steps.length} replies` : `About ${MAX_EXCHANGES} replies`;
+}
+
+function renderDetail() {
+  const d = $("#detail");
+  if (!d || !config) return;
+  d.innerHTML = "";
+  const sc = config.scenarios[menuIndex];
+  if (!sc) {
+    d.append(el("div", "d-jp", "設定"), el("div", "d-rd", "せってい"), el("div", "d-en", "Settings"),
+             el("div", "d-desc", "Pick your tutor and level, and choose what each line shows."),
+             el("div", "d-meta", `Tutor: ${ENGINES[state.engine].name}`));
+  } else {
+    const s = SIGNS[sc.id] || { jp: sc.title, rd: "", desc: "", who: ["", ""] };
+    d.append(el("div", "d-jp", s.jp), el("div", "d-rd", s.rd), el("div", "d-en", sc.title),
+             el("div", "d-desc", s.desc),
+             el("div", "d-meta", `${replyCount(sc.id)}. You'll talk with: ${s.who[1]}. Tutor: ${ENGINES[state.engine].name}.`));
+  }
+  const go = el("div", "d-go");
+  go.appendChild(el("span", null, sc ? "Click or press Enter to start" : "Click or press Enter to open"));
+  d.appendChild(go);
+}
+
+/* ---------- settings drawer ---------- */
+function openDrawer() {
+  $("#drawer").classList.remove("hidden");
+  $("#drawerClose").focus();
+}
+function closeDrawer() {
+  if ($("#drawer").classList.contains("hidden")) return;
+  $("#drawer").classList.add("hidden");
+  buildScenarioList();
+  const items = menuItems();
+  if (items[items.length - 1]) items[items.length - 1].focus();
+}
+
+for (const [id, key] of [["quietToggle", "quiet"], ["readingToggle", "showReading"],
+                         ["englishToggle", "showEnglish"], ["autoSpeakToggle", "autoSpeak"]]) {
+  $("#" + id).onchange = (e) => { state[key] = e.target.checked; save(); if (session) renderConv(); };
+}
+
+/* ---------- conversation ---------- */
+let session = null;
+
+function startScenario(sc) {
+  session = {
+    sc, messages: [], exchanges: 0, xp: 0, loading: false, finished: false,
+    engine: state.engine,
+    maxEx: state.engine === "lessons" ? lessons[sc.id].steps.length : MAX_EXCHANGES,
+    prompt: "", answer: null, revealed: false,
+    choices: [], wrong: new Set(), explanation: "", error: "",
+  };
+  const s = SIGNS[sc.id] || {};
+  $("#convJp").textContent = s.jp || sc.title;
+  $("#convEn").textContent = sc.title;
+  $("#routeStops").innerHTML = "";
+  for (let i = 0; i <= session.maxEx; i++) $("#routeStops").appendChild(el("span", "stop"));
+  $("#home").classList.add("hidden");
+  $("#conv").classList.remove("hidden");
+  document.body.classList.add("in-conv");
+  $("#draft").value = "";
+  micStatus("");
+  window.scrollTo(0, 0);
+  renderConv();
+  requestNext();
+}
+
+function leaveConversation() {
+  closeWord();
+  speechSynthesis.cancel();
+  if (listening && recognizer) recognizer.stop();
+  session = null;
+  $("#conv").classList.add("hidden");
+  $("#home").classList.remove("hidden");
+  document.body.classList.remove("in-conv");
+  renderRail();
+  window.scrollTo(0, 0);
+  const b = menuItems()[menuIndex];
+  if (b) b.focus({ preventScroll: true });
+}
+
+// Every turn we send the WHOLE transcript. The API is stateless, so this
+// resend is the tutor's memory.
+async function requestNext() {
+  session.loading = true; session.choices = []; session.error = "";
+  renderConv();
+  try {
+    let turn, raw = null;
+    if (session.engine === "lessons") {
+      // Lessons run entirely in the browser: no server call, no network.
+      await new Promise((r) => setTimeout(r, 350));   // brief pause so the reply reads as a turn
+      turn = lessonTurn();
+    } else {
+      const history = session.messages.map((m) =>
+        m.role === "ai" ? { role: "ai", raw: m.raw } : { role: "user", text: m.japanese });
+      const res = await fetch("/api/turn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ engine: session.engine, scenario_id: session.sc.id, level: state.level, history }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "The tutor didn't respond.");
+      turn = data.turn; raw = data.raw;
+    }
+    if (!session) return;   // user left mid-request
+    // Feedback is about the learner's most recent message.
+    if (turn.feedback) {
+      for (let i = session.messages.length - 1; i >= 0; i--) {
+        if (session.messages[i].role === "user") { session.messages[i].feedback = turn.feedback; break; }
+      }
+    }
+    session.messages.push({ role: "ai", japanese: turn.japanese, reading: turn.reading,
+                            english: turn.english, raw });
+    session.prompt = turn.prompt || ""; session.answer = turn.answer || null; session.revealed = false;
+    session.choices = shuffle((turn.choices || []).slice(0, 3));
+    session.wrong = new Set(); session.explanation = "";
+    if (state.autoSpeak) speak(turn.japanese);
+
+    if (session.exchanges >= session.maxEx) {
+      session.finished = true;
+      session.streakResult = completeLesson();
+      award(XP.finish);
+    }
+  } catch (err) {
+    if (session) session.error = err.message;
+  } finally {
+    if (session) { session.loading = false; renderConv(); }
+  }
+}
+
+function award(n) { session.xp += n; addXP(n); }
+
+/* ---------- guided lessons (offline engine) ---------- */
+function asTurn(line) { return { japanese: line.jp, reading: line.rd, english: line.en, feedback: null, choices: [], prompt: "", answer: null }; }
+
+// Builds the next tutor turn from the script. Same shape the AI engines return,
+// so the rest of the UI doesn't care where a turn came from.
+function lessonTurn() {
+  const lesson = lessons[session.sc.id];
+  const k = session.exchanges;                    // learner replies so far
+  if (k >= lesson.steps.length) return asTurn(lesson.closing);
+  const s = lesson.steps[k];
+  const t = asTurn(s.ai);
+  t.choices = [
+    { japanese: s.answer.jp, reading: s.answer.rd, english: s.answer.en, isBest: true, why: "" },
+    ...s.wrong.map((w) => ({ japanese: w.jp, reading: w.rd, english: w.en, isBest: false, why: w.why })),
+  ];
+  t.prompt = s.answer.en;
+  t.answer = { jp: s.answer.jp, rd: s.answer.rd };
+  return t;
+}
+
+// Fuzzy comparison: speech recognition may return kanji or kana and drop
+// punctuation, so we normalize (katakana -> hiragana, strip symbols) and use
+// edit distance against both the written and the hiragana form of the answer.
+function norm(s) {
+  return s.replace(/[\s、。，．,.!?！？「」『』〜~ー・]/g, "")
+          .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+          .toLowerCase();
+}
+function lev(a, b) {
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return dp[a.length][b.length];
+}
+function similarity(a, b) {
+  a = norm(a); b = norm(b);
+  if (!a || !b) return 0;
+  return 1 - lev(a, b) / Math.max(a.length, b.length);
+}
+function gradeLesson(text, ans) {
+  const score = Math.max(similarity(text, ans.jp), similarity(text, ans.rd));
+  if (score >= 0.6) return { xp: XP.spoken, feedback: { corrected: null, note: "That matches a natural reply.", good: true } };
+  return { xp: 2, feedback: { corrected: ans.jp, reading: ans.rd, note: "Say it out loud once before moving on." } };
+}
+
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+async function sendFreeform() {
+  const text = $("#draft").value.trim();
+  if (!text || session.loading || session.finished) return;
+  if (listening && recognizer) recognizer.stop();
+  $("#draft").value = "";
+  autosize();
+  const msg = { role: "user", japanese: text };
+  session.messages.push(msg);
+  if (session.engine === "lessons" && session.answer) {
+    const g = gradeLesson(text, session.answer);
+    msg.feedback = g.feedback;
+    award(g.xp);
+  } else {
+    award(XP.spoken);
+  }
+  session.exchanges += 1;
+  await requestNext();
+}
+
+async function pickChoice(i) {
+  if (!session || session.loading || session.finished) return;
+  const c = session.choices[i];
+  if (!c || session.wrong.has(i)) return;
+  speak(c.japanese);
+  if (c.isBest) {
+    session.messages.push({ role: "user", japanese: c.japanese, reading: c.reading, english: c.english });
+    award(XP.choice);
+    session.exchanges += 1;
+    await requestNext();
+  } else {
+    session.wrong.add(i);
+    session.explanation = c.why || "That reply doesn't fit here.";
+    renderConv();
+  }
+}
+
+/* ---------- rendering the conversation ---------- */
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+function icon(id) {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS(ns, "use");
+  use.setAttribute("href", "#" + id);
+  svg.appendChild(use);
+  return svg;
+}
+
+/* ---------- word lookup ---------- */
+// The server splits each Japanese line into words (Japanese has no spaces)
+// and attaches readings and meanings. Results are cached per line, so each
+// line is only sent once.
+const wordCache = new Map();       // text -> [word] | null
+const wordPending = new Set();
+let wantWords = [];                // lines rendered before their words arrived
+const TOUCH = window.matchMedia("(hover: none)").matches;
+
+function fetchWords(texts) {
+  const missing = [...new Set(texts)].filter((t) => t && !wordCache.has(t) && !wordPending.has(t));
+  if (!missing.length) return;
+  missing.forEach((t) => wordPending.add(t));
+  fetch("/api/words", { method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ texts: missing }) })
+    .then((r) => r.json())
+    .then((d) => { for (const t of missing) wordCache.set(t, (d.results || {})[t] || null); })
+    .catch(() => { for (const t of missing) wordCache.set(t, null); })
+    .finally(() => {
+      missing.forEach((t) => wordPending.delete(t));
+      if (session) renderConv({ keepScroll: true });
+    });
+}
+
+// Render a Japanese string. Once its words are known, each word becomes a
+// button that opens the meaning popup.
+function jpText(text, cls) {
+  const node = el("div", cls);
+  const words = wordCache.get(text);
+  if (!words) {
+    node.textContent = text;
+    if (!wordCache.has(text)) wantWords.push(text);
+    return node;
+  }
+  for (const w of words) {
+    if (!w.w) { node.appendChild(document.createTextNode(w.t)); continue; }
+    const b = el("button", "w", w.t);
+    b.type = "button";
+    b.setAttribute("aria-haspopup", "dialog");
+    b.setAttribute("aria-expanded", "false");
+    b.onclick = (e) => { e.stopPropagation(); openWord(w, b); };
+    node.appendChild(b);
+  }
+  return node;
+}
+
+let wordOpen = null;
+
+function openWord(w, anchor) {
+  if (wordOpen && wordOpen.anchor === anchor) { closeWord(); return; }
+  closeWord();
+  const pop = $("#wordPop");
+  pop.innerHTML = "";
+
+  const head = el("div");
+  head.appendChild(el("div", "word", w.t));
+  if (w.rd) head.appendChild(el("div", "wrd", w.rd));
+  const play = el("button", "play");
+  play.setAttribute("aria-label", "Play this word");
+  play.appendChild(icon("i-speaker"));
+  play.onclick = () => speak(w.t);
+  const top = el("div", "top");
+  top.append(head, play);
+  pop.appendChild(top);
+
+  if (w.pos) pop.appendChild(el("div", "pos", w.pos));
+  if (w.base) {
+    const b = el("div", "base", "Dictionary form ");
+    b.appendChild(el("span", "jp", w.base));
+    if (w.baseRd) b.appendChild(document.createTextNode(` (${w.baseRd})`));
+    pop.appendChild(b);
+  }
+  if (w.form) pop.appendChild(el("div", "form", w.form));
+
+  const senses = w.senses || [];
+  if (senses.length > 1) {
+    const ol = el("ol", "senses");
+    senses.forEach((s) => ol.appendChild(el("li", null, s)));
+    pop.appendChild(ol);
+  } else {
+    pop.appendChild(el("div", "senses" + (senses.length ? "" : " none"),
+                       senses[0] || "No dictionary entry for this word."));
+  }
+
+  pop.classList.remove("hidden");
+  anchor.classList.add("open");
+  anchor.setAttribute("aria-expanded", "true");
+  wordOpen = { anchor };
+  positionWord();
+  pop.focus({ preventScroll: true });
+}
+
+function positionWord() {
+  if (!wordOpen) return;
+  const a = wordOpen.anchor;
+  if (!a.isConnected) { closeWord(); return; }
+  const r = a.getBoundingClientRect();
+  const pop = $("#wordPop");
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  const left = Math.min(Math.max(16, r.left + r.width / 2 - pw / 2), window.innerWidth - pw - 16);
+  let top = r.bottom + 8;
+  if (top + ph > window.innerHeight - 12 && r.top - ph - 8 > 12) top = r.top - ph - 8;
+  pop.style.left = left + "px";
+  pop.style.top = Math.max(12, top) + "px";
+}
+
+function closeWord(returnFocus = false) {
+  if (!wordOpen) return;
+  const a = wordOpen.anchor;
+  a.classList.remove("open");
+  a.setAttribute("aria-expanded", "false");
+  wordOpen = null;
+  $("#wordPop").classList.add("hidden");
+  if (returnFocus && a.isConnected) a.focus();
+}
+
+document.addEventListener("click", (e) => {
+  if (wordOpen && !$("#wordPop").contains(e.target)) closeWord();
+});
+window.addEventListener("scroll", positionWord, { passive: true });
+window.addEventListener("resize", positionWord);
+
+// Who is speaking: a nameplate on top of each dialog box.
+function plate(jp, en) {
+  const p = el("div", "plate");
+  p.append(el("span", "p-jp", jp), el("span", "p-en", en));
+  return p;
+}
+
+function lineView(m, latest) {
+  if (m.role === "ai") {
+    const s = SIGNS[session.sc.id] || { who: ["相手", "Partner"] };
+    const row = el("div", "line-ai" + (latest ? " latest" : ""));
+    const box = el("div", "box");
+    if (state.showReading && m.reading && m.reading !== m.japanese) box.appendChild(el("div", "rd", m.reading));
+    box.appendChild(jpText(m.japanese, "jp-text"));
+    if (state.showEnglish && m.english) box.appendChild(el("div", "en", m.english));
+    const play = el("button", "play");
+    play.setAttribute("aria-label", "Play this line");
+    play.appendChild(icon("i-speaker"));
+    play.onclick = () => speak(m.japanese);
+    box.appendChild(play);
+    if (latest) box.appendChild(el("span", "next"));
+    row.append(plate(s.who[0], s.who[1]), box);
+    return row;
+  }
+  const wrap = el("div", "line-me");
+  const box = el("div", "box");
+  box.appendChild(jpText(m.japanese, "jp-text"));
+  if (state.showReading && m.reading && m.reading !== m.japanese) box.appendChild(el("div", "rd", m.reading));
+  if (state.showEnglish && m.english) box.appendChild(el("div", "en", m.english));
+  wrap.append(plate("あなた", "You"), box);
+  if (m.feedback && (m.feedback.corrected || m.feedback.note)) {
+    const good = m.feedback.good || !m.feedback.corrected;
+    const f = el("div", "fb" + (good ? " good" : ""));
+    f.appendChild(el("span", "fb-tag", good ? "Nice!" : "More natural"));
+    if (m.feedback.corrected) {
+      f.appendChild(jpText(m.feedback.corrected, "better"));
+      if (m.feedback.reading && state.showReading) f.appendChild(el("div", "better-rd", m.feedback.reading));
+    }
+    if (m.feedback.note) f.appendChild(el("div", null, m.feedback.note));
+    wrap.appendChild(f);
+  }
+  return wrap;
+}
+
+function renderRoute() {
+  const pct = Math.min(1, session.exchanges / session.maxEx);
+  // Track spans from first to last stop centre (7px inset each side).
+  $("#routeRun").style.width = `calc((100% - 14px) * ${pct})`;
+  [...$("#routeStops").children].forEach((s, i) => {
+    s.className = "stop" + (i < session.exchanges ? " passed" : i === session.exchanges ? " here" : "");
+    if (session.finished && i === session.exchanges) s.className = "stop passed";
+  });
+  const done = Math.min(session.exchanges, session.maxEx);
+  $("#routeLabel").textContent = session.finished ? "Complete" : `${done} / ${session.maxEx} replies`;
+}
+
+function renderConv(opts = {}) {
+  if (!session) return;
+  closeWord();
+  wantWords = [];
+  const chat = $("#chat");
+  chat.innerHTML = "";
+  let lastAi = -1;
+  session.messages.forEach((m, i) => { if (m.role === "ai") lastAi = i; });
+  session.messages.forEach((m, i) => chat.appendChild(lineView(m, i === lastAi && !session.loading)));
+  if (session.loading) {
+    const t = el("div", "typing");
+    t.setAttribute("aria-label", "Tutor is replying");
+    t.append(el("i"), el("i"), el("i"));
+    chat.appendChild(t);
+  }
+  if (session.error) {
+    const p = el("div", "error-panel");
+    const retry = el("button", "btn ghost sm", "Try again");
+    retry.onclick = () => requestNext();
+    p.append(el("p", null, session.error), retry);
+    chat.appendChild(p);
+  }
+
+  $("#convXp").textContent = `+${session.xp} XP`;
+  renderRoute();
+
+  // Which input is visible?
+  $("#finished").classList.toggle("hidden", !session.finished);
+  $("#answerArea").classList.toggle("hidden", session.finished);
+  const quiet = state.quiet && !session.finished;
+  const speaking = !state.quiet && !session.finished;
+  $("#choices").classList.toggle("hidden", !quiet);
+  $("#speakbar").classList.toggle("hidden", !speaking);
+  $("#modeSpeak").classList.toggle("active", !state.quiet);
+  $("#modeTap").classList.toggle("active", state.quiet);
+  $("#modeSpeak").setAttribute("aria-pressed", !state.quiet);
+  $("#modeTap").setAttribute("aria-pressed", state.quiet);
+  $("#dockNote").textContent = quiet
+    ? (TOUCH ? "Tap a word to look it up" : "Click a word to look it up, or press 1, 2 or 3 to answer")
+    : (TOUCH ? "Tap a word to look it up" : "Click a word to look it up. Enter sends.");
+  $("#sendBtn").disabled = session.loading;
+
+  // Guided lessons: tell the learner WHAT to say (English prompt), with an
+  // optional peek at the Japanese. AI engines are open-ended, so no prompt.
+  const pb = $("#promptBox");
+  pb.innerHTML = "";
+  const showPrompt = speaking && session.engine === "lessons" && session.prompt && !session.loading;
+  pb.classList.toggle("hidden", !showPrompt);
+  if (showPrompt) {
+    pb.append(el("div", "label", "Say this in Japanese"), el("div", "target", session.prompt));
+    if (session.revealed && session.answer) {
+      pb.append(jpText(session.answer.jp, "reveal-jp"), el("div", "reveal-rd", session.answer.rd));
+    } else {
+      const r = el("button", "linkbtn", "Show me how to say it");
+      r.onclick = () => { session.revealed = true; speak(session.answer.jp); renderConv(); };
+      pb.appendChild(r);
+    }
+  }
+
+  if (session.finished) {
+    const r = session.streakResult || { before: state.streak, after: state.streak, firstToday: false };
+    const days = (n) => `${n} ${n === 1 ? "day" : "days"}`;
+    // Build the calendar once per finish, so later re-renders don't replay the stamp.
+    if (!session.calShown) {
+      renderCal($("#finCal"), r.firstToday);
+      session.calShown = true;
+    }
+    $("#finishedLine").textContent = r.firstToday
+      ? (r.before > 0 && r.after > r.before ? `Today is stamped. Your streak goes from ${days(r.before)} to ${days(r.after)}.`
+                                            : `Today is stamped. That starts your streak: ${days(r.after)}.`)
+      : `Today was already stamped, so your streak stays at ${days(r.after)}. Extra practice still counts toward your daily goal.`;
+    $("#finXp").textContent = "+" + session.xp;
+    $("#finStreak").textContent = days(r.after);
+  }
+
+  // Multiple-choice list
+  const box = $("#choices");
+  box.innerHTML = "";
+  if (quiet) {
+    if (!session.choices.length) {
+      box.appendChild(el("div", "waiting", session.loading ? "Waiting for the tutor's line." : "No answer options for this line. Switch to Speak to reply."));
+    }
+    // Each answer is a card. Clicking a word inside it looks the word up;
+    // clicking anywhere else (or the number) picks the answer.
+    session.choices.forEach((c, i) => {
+      const wrong = session.wrong.has(i);
+      const card = el("div", "choice" + (wrong ? " wrong" : "") + (session.loading ? " busy" : ""));
+      const text = el("div");
+      text.appendChild(jpText(c.japanese, "jp-text"));
+      if (state.showReading && c.reading && c.reading !== c.japanese) text.appendChild(el("div", "rd", c.reading));
+      if (state.showEnglish && c.english) text.appendChild(el("div", "en", c.english));
+      const key = el("button", "key");
+      key.appendChild(el("span", "key-n", String(i + 1)));
+      key.type = "button";
+      key.setAttribute("aria-label", `Answer ${i + 1}: ${c.japanese}`);
+      key.disabled = wrong || session.loading;
+      card.append(key, text);
+      card.onclick = () => { if (!wrong && !session.loading) pickChoice(i); };
+      box.appendChild(card);
+    });
+    if (session.explanation) box.appendChild(el("div", "why", "Not quite. " + session.explanation));
+  }
+
+  fetchWords(wantWords);
+  if (!opts.keepScroll) {
+    requestAnimationFrame(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
+  }
+}
+
+/* ---------- wire up ---------- */
+function setMode(quiet) {
+  if (listening && recognizer) recognizer.stop();
+  state.quiet = quiet; save();
+  $("#quietToggle").checked = quiet;
+  renderConv();
+  if (!quiet) $("#draft").focus();
+}
+function autosize() {
+  const t = $("#draft");
+  t.style.height = "auto";
+  t.style.height = Math.min(t.scrollHeight, 140) + "px";
+}
+
+$("#backBtn").onclick = leaveConversation;
+$("#doneBtn").onclick = leaveConversation;
+$("#againBtn").onclick = () => { const sc = session.sc; startScenario(sc); };
+$("#micBtn").onclick = toggleMic;
+$("#sendBtn").onclick = sendFreeform;
+$("#modeSpeak").onclick = () => setMode(false);
+$("#modeTap").onclick = () => setMode(true);
+$("#draft").addEventListener("input", autosize);
+$("#draft").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendFreeform(); }
+});
+$("#drawerClose").onclick = closeDrawer;
+$("#drawerScrim").onclick = closeDrawer;
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && wordOpen) { closeWord(true); return; }
+  if (!$("#drawer").classList.contains("hidden")) {
+    if (e.key === "Escape") closeDrawer();
+    return;
+  }
+  // Menu: arrow keys move through the items, like a game menu.
+  if (!session && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+    const items = menuItems();
+    if (!items.length) return;
+    e.preventDefault();
+    const n = (menuIndex + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+    items[n].focus();
+    return;
+  }
+  if (!session || !state.quiet || session.finished) return;
+  if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+  if (["1", "2", "3"].includes(e.key)) pickChoice(Number(e.key) - 1);
+});
+
+/* ---------- boot ---------- */
+(async function init() {
+  const res = await fetch("/api/config");
+  config = await res.json();
+  lessons = await (await fetch("/api/lessons")).json();
+  if (!config.levels.includes(state.level)) state.level = config.levels[0];
+  // First run: use the free local AI if it's set up, otherwise guided lessons.
+  if (!config.engines.includes(state.engine)) {
+    state.engine = config.engines.includes("ollama") ? "ollama" : "lessons";
+    save();
+  }
+  if (!window.matchMedia("(min-width: 881px)").matches) $("#draft").placeholder = "Type in Japanese";
+  refreshForNewDay();
+  renderRail();
+  renderSettings();
+  buildScenarioList();
+})();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) { refreshForNewDay(); renderRail(); } });
+</script>
+</body>
+</html>
