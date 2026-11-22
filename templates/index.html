@@ -398,6 +398,105 @@
   .wpop .none { color: var(--grey-dark); }
 
   /* ==================================================================
+     BONDS (絆): people, ranks, profiles
+     ================================================================== */
+  /* Ten people on the menu, so items are a bit smaller than a 6-item menu. */
+  /* A long list at -7deg drifts off the left edge, so tilt it less. */
+  .menu.people { transform: rotate(-3deg); margin-top: 18px; padding-left: 14px; }
+  .menu.people .mi-jp { font-size: clamp(26px, 2.7vw, 38px); }
+  .menu.people .mi { padding: 3px 30px 6px 18px; }
+  .mi-rank { font: 400 17px/1 var(--f-display); background: var(--black); color: var(--ink); padding: 3px 8px 4px;
+             transform: skewX(-14deg); letter-spacing: .03em; align-self: center; white-space: nowrap; }
+  .mi.sel .mi-rank { background: var(--red); }
+  .mi-rank.r0 { background: transparent; color: var(--black); box-shadow: inset 0 0 0 2px var(--black); }
+  .mi.sel .mi-rank.r0 { color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); background: transparent; }
+
+  /* Emblem: one kanji in a tilted diamond. */
+  .emblem { width: 64px; height: 64px; flex: none; display: grid; place-items: center; background: var(--red); color: var(--ink);
+            transform: rotate(45deg); box-shadow: 5px 5px 0 var(--ink); }
+  .emblem span { transform: rotate(-45deg); font: 400 32px/1 var(--f-jp-display); }
+  .emblem.sm { width: 40px; height: 40px; box-shadow: 3px 3px 0 var(--ink); }
+  .emblem.sm span { font-size: 20px; }
+
+  /* Rank meter: ten slanted pips. */
+  .pips { display: flex; gap: 4px; margin-top: 10px; }
+  .pips i { width: 20px; height: 14px; background: #2E2E2E; transform: skewX(-24deg); }
+  .pips i.on { background: var(--red); }
+  .pips i.new { background: var(--ink); animation: pip-in .5s cubic-bezier(.2,1.5,.4,1) both; animation-delay: calc(var(--d, 0) * 90ms + .3s); }
+  @keyframes pip-in { from { transform: skewX(-24deg) scaleY(3); opacity: 0; } }
+
+  .detail .d-head { display: flex; gap: 26px; align-items: center; }
+  .detail .d-head .d-jp { font-size: clamp(40px, 4.4vw, 62px); }
+  .detail .d-rank { display: flex; align-items: baseline; gap: 12px; margin-top: 18px; font: 400 28px/1 var(--f-display); }
+  .detail .d-rank small { font: 600 16px/1 var(--f-ui); color: var(--grey); }
+  .detail .d-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .detail .d-actions button { font: 700 italic 19px/1 var(--f-ui); padding: 8px 18px 9px; transform: skewX(-14deg); }
+  .detail .d-actions button > span { display: inline-block; transform: skewX(14deg); }
+  .detail .d-talk { background: var(--ink); color: var(--black); }
+  .detail .d-prof { background: var(--red); color: var(--ink); }
+  .detail .d-actions button:hover { box-shadow: 0 0 0 3px var(--red); }
+  .detail .d-actions .d-prof:hover { box-shadow: 0 0 0 3px var(--ink); }
+
+  .problems { position: fixed; z-index: 20; top: 12px; left: 16px; right: 16px; max-width: 760px; margin: 0 auto; background: var(--black); color: var(--ink); padding: 10px 16px; font: 600 16px/1.4 var(--f-ui);
+              clip-path: polygon(0 0, 100% 6%, 99.5% 100%, .5% 94%); }
+  .problems b { color: var(--red); }
+  .problems code { background: #222; }
+
+  /* Profile drawer */
+  .prof-head { display: flex; gap: 22px; align-items: center; margin: 14px 0 4px 8px; }
+  .prof-head .nm { font: 400 38px/1.05 var(--f-jp-display); }
+  .prof-head .en { font: 400 24px/1 var(--f-display); color: var(--red); margin-top: 4px; letter-spacing: .02em; }
+  .prof-head .role { font: 600 17px/1.3 var(--f-ui); color: var(--grey); margin-top: 4px; }
+  .rankbox { margin-top: 22px; background: var(--panel); padding: 14px 16px 16px; transform: skewX(-4deg); }
+  .rankbox > * { transform: skewX(4deg); }
+  .rankbox .big { font: 400 42px/1 var(--f-display); letter-spacing: .02em; }
+  .rankbox .big span { color: var(--red); }
+  .rankbox .to-next { font: 600 16px/1.3 var(--f-ui); color: var(--grey); margin-top: 10px; }
+  .rankbox .bar { margin-top: 6px; height: 10px; background: #2E2E2E; }
+  .rankbox .bar > div { background: var(--red); }
+  .voicebtn { margin-top: 14px; display: inline-flex; gap: 8px; align-items: center; font: 700 italic 17px/1 var(--f-ui);
+              background: var(--ink); color: var(--black); padding: 7px 14px 8px; transform: skewX(-12deg); }
+  .voicebtn > * { transform: skewX(12deg); }
+  .voicebtn svg { width: 18px; height: 18px; }
+  .voicebtn:hover { background: var(--red); color: var(--ink); }
+  .facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .facts li { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; font: 600 18px/1.35 var(--f-ui); }
+  .facts .fr { font: 400 17px/1 var(--f-display); background: var(--red); color: var(--ink); text-align: center; padding: 4px 0 5px; transform: skewX(-14deg); }
+  .facts li.locked { color: var(--grey-dark); }
+  .facts li.locked .fr { background: #2A2A2A; color: var(--grey); }
+  .facts li.fresh { color: var(--ink); }
+  .facts li.fresh .fr { background: var(--ink); color: var(--black); }
+  .eps { display: flex; flex-direction: column; gap: 8px; }
+  .ep { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; background: var(--panel); padding: 9px 12px 10px 16px; transform: skewX(-8deg); }
+  .ep > * { transform: skewX(8deg); }
+  .ep .t { font: 700 19px/1.2 var(--f-ui); }
+  .ep .t .jp { font: 700 17px/1.2 var(--f-jp); color: var(--grey); margin-left: 8px; }
+  .ep .s { font: 600 15px/1.2 var(--f-ui); color: var(--grey); margin-top: 3px; }
+  .ep.locked .t { color: var(--grey-dark); }
+  .ep .play-ep { font: 400 18px/1 var(--f-display); background: var(--red); color: var(--ink); padding: 6px 14px 7px; letter-spacing: .03em; }
+  .ep .play-ep:hover { background: var(--ink); color: var(--black); }
+  .edit-hint { margin-top: 26px; font: 500 15px/1.45 var(--f-ui); color: var(--grey); }
+
+  /* Bond button in the conversation header */
+  .bond-btn { font: 400 20px/1 var(--f-display); background: var(--ink); color: var(--black); padding: 6px 12px 7px; transform: skewX(-14deg) rotate(-3deg);
+              white-space: nowrap; letter-spacing: .02em; }
+  .bond-btn:hover { background: var(--red); color: var(--ink); }
+
+  /* Bond result on the finish screen */
+  .bond-result { margin: 4px 0 18px; padding: 14px 18px 16px; background: var(--black); color: var(--ink); transform: skewX(-4deg); }
+  .bond-result > * { transform: skewX(4deg); }
+  .bond-result .bh { display: flex; align-items: center; gap: 18px; padding-left: 8px; }
+  .bond-result .pips { margin-top: 18px; }
+  .bond-result .bt { font: 400 26px/1.1 var(--f-display); letter-spacing: .02em; }
+  .bond-result .bt .jp { font: 400 24px/1 var(--f-jp-display); color: var(--red); margin-right: 8px; }
+  .bond-result .bs { font: 600 16px/1.3 var(--f-ui); color: var(--grey); margin-top: 3px; }
+  .rankup { margin-top: 14px; display: inline-block; font: 400 clamp(34px, 5vw, 50px)/1 var(--f-display); background: var(--red); color: var(--ink);
+            padding: 6px 22px 9px 16px; transform: rotate(-3deg) skewX(-10deg); letter-spacing: .02em; animation: stamp-in .6s cubic-bezier(.2,1.5,.4,1) .15s both; }
+  .unlock { margin-top: 12px; background: var(--ink); color: var(--black); padding: 10px 14px; font: 600 18px/1.35 var(--f-ui);
+            clip-path: polygon(0 0, 100% 5%, 99.5% 100%, .5% 95%); }
+  .unlock b { display: block; font: 700 italic 15px/1 var(--f-ui); color: var(--red); margin-bottom: 4px; }
+
+  /* ==================================================================
      SMALL SCREENS
      ================================================================== */
   @media (max-width: 880px) {
@@ -416,7 +515,9 @@
     .goal { min-width: 0; flex: 1 1 200px; }
     .menu { grid-row: 2; transform: rotate(-4deg); padding: 18px 0 30px; }
     .mi { margin-left: calc(var(--x, 0) * .35px); padding: 6px 22px 8px 14px; flex-wrap: wrap; row-gap: 2px; }
-    .mi-jp { font-size: 32px; }
+    .mi-jp, .menu.people .mi-jp { font-size: 30px; }
+    .bond-btn { font-size: 17px; padding: 5px 9px 6px; }
+    .conv-top { flex-wrap: nowrap; }
     .mi-en { font-size: 17px; }
     .mi-desc { display: block; flex-basis: 100%; font: 600 15px/1.3 var(--f-ui); }
     .mi:not(.sel) .mi-desc { opacity: .8; }
@@ -490,13 +591,15 @@
     </div>
   </header>
 
-  <nav class="menu" id="scenarioList" aria-label="Situations"></nav>
+  <div class="problems hidden" id="problems" role="alert"></div>
+
+  <nav class="menu people" id="scenarioList" aria-label="People"></nav>
 
   <aside class="detail" id="detail" aria-live="polite"></aside>
 
   <footer class="home-foot">
     <div class="brand"><span class="jp">日本語トーク</span><span class="en">NihongoTalk</span></div>
-    <div class="keys"><b>↑ ↓</b> choose &nbsp; <b>Enter</b> start</div>
+    <div class="keys"><b>↑ ↓</b> choose &nbsp; <b>Enter</b> talk &nbsp; <b>P</b> profile</div>
   </footer>
 </section>
 
@@ -508,6 +611,7 @@
       <div class="conv-top">
         <button class="back" id="backBtn"><svg aria-hidden="true"><use href="#i-chevron-left"/></svg><span>Menu</span></button>
         <div class="conv-title"><span class="jp" id="convJp"></span><span class="en" id="convEn"></span></div>
+        <button class="bond-btn" id="convBond" aria-label="Open profile"></button>
         <span class="xp-pill" id="convXp">+0 XP</span>
       </div>
       <div class="route">
@@ -531,8 +635,10 @@
             <div><dt>XP earned</dt><dd id="finXp">0</dd></div>
             <div><dt>Streak</dt><dd id="finStreak">0</dd></div>
           </dl>
+          <div class="bond-result" id="bondResult"></div>
           <div class="actions">
-            <button class="btn" id="againBtn">Practice again</button>
+            <button class="btn" id="againBtn">Talk again</button>
+            <button class="btn ghost" id="finProfileBtn">Profile</button>
             <button class="btn ghost" id="doneBtn">Back to menu</button>
           </div>
         </div>
@@ -591,8 +697,20 @@
       <label class="toggle"><span>Read tutor lines aloud</span><input type="checkbox" id="autoSpeakToggle"></label>
     </div>
 
-    <p class="credit">Word meanings from <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener">JMdict</a> by EDRDG, used under CC BY-SA 4.0.</p>
+    <div class="group">
+      <div class="group-title">Voices</div>
+      <label class="toggle"><span>Realistic voices (VOICEVOX)</span><input type="checkbox" id="realVoicesToggle"></label>
+      <div class="hint" id="voiceHint"></div>
+    </div>
+
+    <p class="credit">Word meanings from <a href="https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project" target="_blank" rel="noopener">JMdict</a> by EDRDG, used under CC BY-SA 4.0.<span id="vvCredit"></span></p>
   </div>
+</div>
+
+<!-- ================= PROFILE (bond tracker) ================= -->
+<div id="profile" class="drawer hidden" role="dialog" aria-modal="true" aria-labelledby="profTitle">
+  <div class="drawer-scrim" id="profileScrim"></div>
+  <div class="drawer-panel" id="profilePanel"></div>
 </div>
 
 <div id="wordPop" class="wpop hidden" role="dialog" aria-label="Word meaning" tabindex="-1"></div>
@@ -605,15 +723,12 @@ const DAILY_GOAL = 30;
 const MAX_EXCHANGES = 8;
 const XP = { spoken: 5, choice: 3, finish: 10 };
 
-// How each situation appears on the menu, and who you're talking to in it.
-const SIGNS = {
-  greetings:  { jp: "自己紹介",   rd: "じこしょうかい", desc: "Introduce yourself and make small talk.", who: ["ゆき", "Yuki"] },
-  cafe:       { jp: "カフェ",     rd: "かふぇ",         desc: "Order a drink, pick a size, and pay.",   who: ["店員", "Barista"] },
-  directions: { jp: "道案内",     rd: "みちあんない",   desc: "Ask how to get to the station.",          who: ["地元の人", "Local"] },
-  restaurant: { jp: "ラーメン屋", rd: "らーめんや",     desc: "Get seated, order, and say the right thing before eating.", who: ["店員", "Waiter"] },
-  shopping:   { jp: "買い物",     rd: "かいもの",       desc: "Find a shirt, ask the price and size.",   who: ["店員", "Clerk"] },
-  friend:     { jp: "友だちと",   rd: "ともだちと",     desc: "Catch up and make weekend plans.",        who: ["ハルト", "Haruto"] },
-};
+// Bonds (絆): every person has a rank from 0 to 10. Talking earns bond
+// points; RANK_AT[r] is the total needed to reach rank r. Each new rank
+// reveals one fact about the person and can unlock a new conversation.
+const MAX_RANK = 10;
+const RANK_AT = [0, 1, 4, 8, 13, 18, 24, 30, 37, 44, 52];
+const BOND = { good: 1, finish: 2 };   // per good reply, and for finishing a talk
 // Horizontal offsets that give the menu its staggered, hand-placed look.
 const MENU_X = [0, 64, 18, 92, 34, 76, 8];
 const DOW = ["日", "月", "火", "水", "木", "金", "土"];
@@ -621,11 +736,71 @@ const DOW = ["日", "月", "火", "水", "木", "金", "土"];
 /* ---------- persistent state (streak, XP, settings) ---------- */
 const defaults = {
   streak: 0, best: 0, totalXP: 0, xpToday: 0, xpDay: null, lastDay: null,
-  engine: null, level: "Beginner", quiet: false, showReading: true, showEnglish: true, autoSpeak: true,
+  engine: null, level: "Beginner", quiet: false, showReading: true, showEnglish: true, autoSpeak: true, realVoices: true,
   practiced: [],   // days (YYYY-MM-DD) a lesson was finished, newest last
+  bonds: {},       // per person: { points, done: [episode index...], plays }
 };
 let state = Object.assign({}, defaults, JSON.parse(localStorage.getItem(STORE) || "{}"));
+if (!state.bonds || typeof state.bonds !== "object") state.bonds = {};
 const save = () => localStorage.setItem(STORE, JSON.stringify(state));
+
+/* ---------- bonds ---------- */
+function bondOf(id) {
+  const b = state.bonds[id] || (state.bonds[id] = { points: 0, done: [], plays: 0 });
+  if (!Array.isArray(b.done)) b.done = [];
+  return b;
+}
+function rankOf(points) {
+  let r = 0;
+  while (r < MAX_RANK && points >= RANK_AT[r + 1]) r++;
+  return r;
+}
+const rankFor = (ch) => rankOf(bondOf(ch.id).points);
+const unlockedEpisodes = (ch) => ch.episodes.map((ep, i) => ({ ep, i })).filter((x) => (x.ep.rank || 0) <= rankFor(ch));
+
+// The conversation Enter starts: the first unlocked one you haven't done,
+// otherwise cycle through the unlocked ones.
+function nextEpisode(ch) {
+  const open = unlockedEpisodes(ch);
+  if (!open.length) return null;
+  const b = bondOf(ch.id);
+  const fresh = open.find((x) => !b.done.includes(x.i));
+  return (fresh || open[b.plays % open.length]).i;
+}
+
+// Bank the points from a finished conversation and report what changed.
+function applyBond(ch, gained, epIdx) {
+  const b = bondOf(ch.id);
+  const before = rankOf(b.points);
+  b.points += gained;
+  b.plays = (b.plays || 0) + 1;
+  if (epIdx != null && !b.done.includes(epIdx)) b.done.push(epIdx);
+  const after = rankOf(b.points);
+  save();
+  return {
+    gained, before, after,
+    facts: ch.facts.slice(before, after).map((f, k) => ({ text: f, rank: before + k + 1 })),
+    episodes: ch.episodes.filter((ep) => (ep.rank || 0) > before && (ep.rank || 0) <= after),
+  };
+}
+
+function pips(rank, fresh = 0) {
+  const p = el("div", "pips");
+  p.setAttribute("aria-hidden", "true");
+  for (let i = 1; i <= MAX_RANK; i++) {
+    const isNew = i > rank - fresh && i <= rank;
+    const pip = el("i", isNew ? "new" : i <= rank ? "on" : "");
+    if (isNew) pip.style.setProperty("--d", i - (rank - fresh));
+    p.appendChild(pip);
+  }
+  return p;
+}
+function emblem(ch, small = false) {
+  const e = el("div", "emblem" + (small ? " sm" : ""));
+  e.setAttribute("aria-hidden", "true");
+  e.appendChild(el("span", null, ch.emblem || ch.name.slice(0, 1)));
+  return e;
+}
 
 // Dates as local YYYY-MM-DD strings, so "today" matches the user's own calendar.
 function dayKey(d = new Date()) {
@@ -703,25 +878,90 @@ function renderCal(list, stamp = false) {
 }
 
 /* ---------- speech: text-to-speech and recognition ---------- */
-let jaVoice = null;
+// Each person's file has a "voice": preferred voice names, a gender to fall
+// back on, and pitch/rate. Pitch and rate keep people sounding different even
+// when the computer only has one Japanese voice installed.
+let jaVoices = [], jaVoice = null;
+const NATURAL = /natural|online/i;
+const FEMALE_VOICES = /nanami|aoi|mayu|shiori|haruka|ayumi|sayaka|kyoko|google/i;
+const MALE_VOICES = /keita|daichi|naoki|ichiro|otoya|hattori/i;
 function pickVoice() {
-  const voices = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("ja"));
+  jaVoices = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith("ja"));
   // Prefer natural/online voices (Edge on Windows ships "Nanami"/"Keita" online voices).
-  jaVoice = voices.find((v) => /natural|online/i.test(v.name)) || voices[0] || null;
+  jaVoice = jaVoices.find((v) => NATURAL.test(v.name)) || jaVoices[0] || null;
 }
 if ("speechSynthesis" in window) {
   pickVoice();
   speechSynthesis.onvoiceschanged = pickVoice;
 }
-function speak(text) {
+function voiceFor(cfg) {
+  if (!cfg) return jaVoice;
+  for (const name of cfg.prefer || []) {
+    const hits = jaVoices.filter((v) => v.name.toLowerCase().includes(String(name).toLowerCase()));
+    if (hits.length) return hits.find((v) => NATURAL.test(v.name)) || hits[0];
+  }
+  const g = cfg.gender === "male" ? MALE_VOICES : cfg.gender === "female" ? FEMALE_VOICES : null;
+  const pool = g ? jaVoices.filter((v) => g.test(v.name)) : [];
+  return pool.find((v) => NATURAL.test(v.name)) || pool[0] || jaVoice;
+}
+const clamp = (n, lo, hi, d) => (typeof n === "number" && isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d);
+// Realistic voices: when the VOICEVOX app is running, lines are read by its
+// voices (through /api/tts). Otherwise, or if it fails, the browser's own
+// Japanese voice is used. Audio is cached so replaying a line is instant.
+const vvAudio = new Audio();
+const vvCache = new Map();     // "charId|text" -> blob URL
+let vvAbort = null;
+const useVoicevox = () => state.realVoices && config && config.voicevox && config.voicevox.running;
+
+function stopSpeaking() {
+  if (vvAbort) { vvAbort.abort(); vvAbort = null; }
+  vvAudio.pause();
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+}
+
+async function speak(text, cfg, charId) {
+  stopSpeaking();
+  if (!text) return;
+  if (useVoicevox()) {
+    const key = (charId || "") + "|" + text;
+    try {
+      let url = vvCache.get(key);
+      if (!url) {
+        const ctl = vvAbort = new AbortController();
+        const res = await fetch("/api/tts", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, character_id: charId || null }), signal: ctl.signal,
+        });
+        if (!res.ok) throw new Error("tts " + res.status);
+        url = URL.createObjectURL(await res.blob());
+        if (vvAbort !== ctl) return;   // something else started speaking meanwhile
+        vvAbort = null;
+        vvCache.set(key, url);
+        if (vvCache.size > 150) { const [k, u] = vvCache.entries().next().value; URL.revokeObjectURL(u); vvCache.delete(k); }
+      }
+      vvAudio.src = url;
+      await vvAudio.play();
+      return;
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      // fall through to the browser voice
+    }
+  }
+  browserSpeak(text, cfg);
+}
+
+function browserSpeak(text, cfg) {
   if (!("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
+  stopSpeaking();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "ja-JP";
-  if (jaVoice) u.voice = jaVoice;
-  u.rate = 0.95;
+  const v = voiceFor(cfg);
+  if (v) u.voice = v;
+  u.rate = clamp(cfg && cfg.rate, 0.5, 2, 0.95);
+  u.pitch = clamp(cfg && cfg.pitch, 0, 2, 1);
   speechSynthesis.speak(u);
 }
+const speakAs = (ch, text) => speak(text, ch && ch.voice, ch && ch.id);
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognizer = null, listening = false;
@@ -746,7 +986,7 @@ function toggleMic() {
     return;
   }
   if (listening) { recognizer.stop(); return; }
-  speechSynthesis.cancel();
+  stopSpeaking();
   recognizer = new SR();
   recognizer.lang = "ja-JP";
   recognizer.interimResults = true;
@@ -768,7 +1008,7 @@ function toggleMic() {
 
 /* ---------- rail + home ---------- */
 let config = null;
-let lessons = null;
+let people = [];     // from characters/*.json
 const ENGINES = {
   lessons: { name: "Guided lessons", desc: "Scripted conversations with checked answers. Works offline." },
   ollama:  { name: "Free local AI",  desc: "Open-ended chat with a model running on your PC." },
@@ -801,6 +1041,8 @@ function renderSettings() {
   $("#readingToggle").checked = state.showReading;
   $("#englishToggle").checked = state.showEnglish;
   $("#autoSpeakToggle").checked = state.autoSpeak;
+  $("#realVoicesToggle").checked = state.realVoices;
+  renderVoiceHint();
 
   const list = $("#engineList");
   list.innerHTML = "";
@@ -845,7 +1087,7 @@ function menuItems() { return [...$("#scenarioList").querySelectorAll(".mi")]; }
 function buildScenarioList() {
   const list = $("#scenarioList");
   list.innerHTML = "";
-  const items = [...config.scenarios.map((sc) => ({ sc })), { settings: true }];
+  const items = [...people.map((ch) => ({ ch })), { settings: true }];
   items.forEach((it, i) => {
     const b = el("button", "mi" + (it.settings ? " settings" : ""));
     b.style.setProperty("--x", MENU_X[i % MENU_X.length]);
@@ -855,9 +1097,12 @@ function buildScenarioList() {
                el("span", "mi-desc", "Tutor, level and display options."));
       b.onclick = openDrawer;
     } else {
-      const s = SIGNS[it.sc.id] || { jp: it.sc.title, desc: "" };
-      b.append(el("span", "mi-jp", s.jp), el("span", "mi-en", it.sc.title), el("span", "mi-desc", s.desc));
-      b.onclick = () => startScenario(it.sc);
+      const r = rankFor(it.ch);
+      const chip = el("span", "mi-rank" + (r ? "" : " r0"), r ? `RANK ${r}` : "NEW");
+      b.append(el("span", "mi-jp", it.ch.name), el("span", "mi-en", it.ch.name_en), chip,
+               el("span", "mi-desc", it.ch.role || ""));
+      b.setAttribute("aria-label", `${it.ch.name_en}, ${it.ch.role || ""}, rank ${r}`);
+      b.onclick = () => startChat(it.ch);
     }
     b.dataset.idx = i;
     b.onmouseenter = () => selectMenu(i);
@@ -873,32 +1118,91 @@ function selectMenu(i) {
   renderDetail();
 }
 
-function replyCount(id) {
-  return state.engine === "lessons" && lessons[id] ? `${lessons[id].steps.length} replies` : `About ${MAX_EXCHANGES} replies`;
-}
+// Whether a person can be talked to with the current tutor.
+function canTalk(ch) { return state.engine !== "lessons" || unlockedEpisodes(ch).length > 0; }
 
 function renderDetail() {
   const d = $("#detail");
   if (!d || !config) return;
   d.innerHTML = "";
-  const sc = config.scenarios[menuIndex];
-  if (!sc) {
+  const ch = people[menuIndex];
+  if (!ch) {
     d.append(el("div", "d-jp", "設定"), el("div", "d-rd", "せってい"), el("div", "d-en", "Settings"),
              el("div", "d-desc", "Pick your tutor and level, and choose what each line shows."),
              el("div", "d-meta", `Tutor: ${ENGINES[state.engine].name}`));
-  } else {
-    const s = SIGNS[sc.id] || { jp: sc.title, rd: "", desc: "", who: ["", ""] };
-    d.append(el("div", "d-jp", s.jp), el("div", "d-rd", s.rd), el("div", "d-en", sc.title),
-             el("div", "d-desc", s.desc),
-             el("div", "d-meta", `${replyCount(sc.id)}. You'll talk with: ${s.who[1]}. Tutor: ${ENGINES[state.engine].name}.`));
+    const go = el("div", "d-go");
+    go.appendChild(el("span", null, "Click or press Enter to open"));
+    d.appendChild(go);
+    return;
   }
-  const go = el("div", "d-go");
-  go.appendChild(el("span", null, sc ? "Click or press Enter to start" : "Click or press Enter to open"));
-  d.appendChild(go);
+  const r = rankFor(ch);
+  const head = el("div", "d-head");
+  const names = el("div");
+  names.append(el("div", "d-jp", ch.name), el("div", "d-rd", ch.role || ""));
+  head.append(emblem(ch), names);
+  const rank = el("div", "d-rank", `RANK ${r}`);
+  rank.appendChild(el("small", null, `${r} of ${ch.facts.length} things learned`));
+  d.append(head, el("div", "d-en", ch.name_en), rank, pips(r), el("div", "d-desc", ch.tagline || ""));
+
+  let meta;
+  if (state.engine === "lessons") {
+    const i = nextEpisode(ch);
+    meta = i == null ? "No conversations unlocked yet." :
+      `Next: ${ch.episodes[i].title} (${ch.episodes[i].steps.length} replies).`;
+  } else {
+    meta = `Open conversation, about ${MAX_EXCHANGES} replies. Tutor: ${ENGINES[state.engine].name}.`;
+  }
+  d.appendChild(el("div", "d-meta", meta));
+
+  const acts = el("div", "d-actions");
+  const talk = el("button", "d-talk"); talk.appendChild(el("span", null, "Talk (Enter)"));
+  talk.onclick = () => startChat(ch);
+  talk.disabled = !canTalk(ch);
+  const prof = el("button", "d-prof"); prof.appendChild(el("span", null, "Profile (P)"));
+  prof.onclick = () => openProfile(ch);
+  acts.append(talk, prof);
+  d.appendChild(acts);
+}
+
+function renderProblems(list) {
+  const box = $("#problems");
+  box.innerHTML = "";
+  box.classList.toggle("hidden", !list.length);
+  if (!list.length) return;
+  box.appendChild(el("b", null, "Some character files couldn't be loaded. "));
+  box.appendChild(document.createTextNode("Fix them and refresh: "));
+  list.forEach((p, i) => { if (i) box.appendChild(document.createTextNode("; ")); box.appendChild(el("code", null, p)); });
+}
+
+function renderVoiceHint() {
+  const h = $("#voiceHint");
+  h.innerHTML = "";
+  const vv = config.voicevox || {};
+  if (vv.running) {
+    h.textContent = state.realVoices
+      ? "VOICEVOX is running. Each person has their own voice."
+      : "VOICEVOX is running. Turn this on to use it.";
+  } else {
+    h.append("For much more natural voices, install the free VOICEVOX app from ");
+    const a = el("a", null, "voicevox.hiroshiba.jp");
+    a.href = "https://voicevox.hiroshiba.jp/"; a.target = "_blank"; a.rel = "noopener";
+    a.style.color = "inherit";
+    h.append(a, ", open it, then refresh this page. Until then, your browser's voices are used.");
+  }
+  // VOICEVOX's terms ask for a "VOICEVOX:<voice>" credit.
+  const names = [...new Set(people.map((c) => c.voice_credit).filter(Boolean))];
+  $("#vvCredit").textContent = vv.running && names.length ? " Voices: " + names.join(", ") + "." : "";
 }
 
 /* ---------- settings drawer ---------- */
 function openDrawer() {
+  fetch("/api/config").then((r) => r.json()).then((c) => {
+    config.voicevox = c.voicevox;
+    if (c.voicevox.running) return fetch("/api/characters").then((r) => r.json()).then((d) => {
+      const credit = Object.fromEntries((d.characters || []).map((x) => [x.id, x.voice_credit]));
+      people.forEach((p) => { p.voice_credit = credit[p.id] || p.voice_credit; });
+    });
+  }).catch(() => {}).finally(renderVoiceHint);
   $("#drawer").classList.remove("hidden");
   $("#drawerClose").focus();
 }
@@ -910,25 +1214,146 @@ function closeDrawer() {
   if (items[items.length - 1]) items[items.length - 1].focus();
 }
 
+/* ---------- profile: the bond tracker ---------- */
+let profileFor = null, profileReturn = null, profileFresh = 0;
+
+// `fresh` = how many of the newest facts to highlight (just after a rank-up).
+function openProfile(ch, fresh = 0) {
+  profileFor = ch; profileFresh = fresh;
+  profileReturn = document.activeElement;
+  renderProfile();
+  $("#profile").classList.remove("hidden");
+  $("#profileClose").focus();
+}
+function closeProfile() {
+  if ($("#profile").classList.contains("hidden")) return;
+  $("#profile").classList.add("hidden");
+  profileFor = null;
+  if (!session) buildScenarioList();
+  if (profileReturn && profileReturn.isConnected) profileReturn.focus({ preventScroll: true });
+}
+
+function renderProfile() {
+  const ch = profileFor;
+  const panel = $("#profilePanel");
+  panel.innerHTML = "";
+  const b = bondOf(ch.id);
+  const r = rankOf(b.points);
+
+  const top = el("div", "drawer-head");
+  const h = el("h2"); h.id = "profTitle";
+  h.append(el("span", "jp", "絆"), el("span", "en", "Bond"));
+  const x = el("button", "x", "Close"); x.id = "profileClose"; x.onclick = closeProfile;
+  top.append(h, x);
+  panel.appendChild(top);
+
+  const head = el("div", "prof-head");
+  const names = el("div");
+  names.append(el("div", "nm", ch.name), el("div", "en", ch.name_en), el("div", "role", ch.role || ""));
+  head.append(emblem(ch), names);
+  panel.appendChild(head);
+
+  // Rank + progress to the next rank
+  const rb = el("div", "rankbox");
+  const big = el("div", "big", "RANK ");
+  big.appendChild(el("span", null, String(r)));
+  rb.append(big, pips(r, profileFresh));
+  if (r < MAX_RANK) {
+    const have = b.points - RANK_AT[r], need = RANK_AT[r + 1] - RANK_AT[r];
+    rb.appendChild(el("div", "to-next", `${need - have} more bond ${need - have === 1 ? "point" : "points"} to rank ${r + 1}`));
+    const bar = el("div", "bar"); const fill = el("div");
+    fill.style.width = (have / need) * 100 + "%";
+    bar.appendChild(fill); rb.appendChild(bar);
+  } else {
+    rb.appendChild(el("div", "to-next", "Max rank. You know each other inside and out."));
+  }
+  const vb = el("button", "voicebtn");
+  vb.append(icon("i-speaker"), el("span", null, "Hear their voice"));
+  vb.onclick = () => {
+    const ep = ch.episodes[0];
+    speakAs(ch, ch.voice.sample || (ep ? ep.steps[0].ai.jp : `${ch.name}です。`));
+  };
+  rb.appendChild(vb);
+  if (useVoicevox() && ch.voice_credit) rb.appendChild(el("div", "to-next", `Voice: ${ch.voice_credit}`));
+  panel.appendChild(rb);
+
+  // What you've learned about them
+  const g1 = el("div", "group");
+  g1.appendChild(el("div", "group-title", `What you know about ${ch.name_en}`));
+  const ul = el("ul", "facts");
+  ch.facts.forEach((f, i) => {
+    const need = i + 1, open = r >= need;
+    const fresh = open && need > r - profileFresh;
+    const li = el("li", open ? (fresh ? "fresh" : "") : "locked");
+    li.append(el("span", "fr", String(need)), el("span", null, open ? f : `??? Reach rank ${need} to find out.`));
+    ul.appendChild(li);
+  });
+  if (!ch.facts.length) ul.appendChild(el("li", "locked", "No facts written for this person yet."));
+  g1.appendChild(ul);
+  panel.appendChild(g1);
+
+  // Conversations
+  const g2 = el("div", "group");
+  g2.appendChild(el("div", "group-title", "Conversations"));
+  const eps = el("div", "eps");
+  ch.episodes.forEach((ep, i) => {
+    const open = (ep.rank || 0) <= r;
+    const row = el("div", "ep" + (open ? "" : " locked"));
+    const info = el("div");
+    const t = el("div", "t", ep.title);
+    if (ep.title_jp) t.appendChild(el("span", "jp", ep.title_jp));
+    info.append(t, el("div", "s", !open ? `Unlocks at rank ${ep.rank}` :
+      b.done.includes(i) ? `Done. ${ep.steps.length} replies.` : `New! ${ep.steps.length} replies.`));
+    row.appendChild(info);
+    if (open) {
+      const p = el("button", "play-ep", b.done.includes(i) ? "REPLAY" : "PLAY");
+      p.onclick = () => { closeProfile(); state.engine = "lessons"; save(); renderSettings(); startChat(ch, i); };
+      row.appendChild(p);
+    }
+    eps.appendChild(row);
+  });
+  g2.appendChild(eps);
+  g2.appendChild(el("div", "hint", state.engine === "lessons"
+    ? "Every finished conversation raises your bond. Picking the right reply first try earns extra points."
+    : "With the AI tutor, every talk is new and they'll bring up things about themselves. Scripted ones (PLAY) switch to Guided lessons."));
+  panel.appendChild(g2);
+
+  const hint = el("p", "edit-hint", "Want to change who they are? Edit their personality, voice and lines in ");
+  hint.append(el("code", null, ch.file || "characters/"), document.createTextNode(", then refresh this page."));
+  panel.appendChild(hint);
+}
+
+$("#profileScrim").onclick = closeProfile;
+
 for (const [id, key] of [["quietToggle", "quiet"], ["readingToggle", "showReading"],
-                         ["englishToggle", "showEnglish"], ["autoSpeakToggle", "autoSpeak"]]) {
-  $("#" + id).onchange = (e) => { state[key] = e.target.checked; save(); if (session) renderConv(); };
+                         ["englishToggle", "showEnglish"], ["autoSpeakToggle", "autoSpeak"], ["realVoicesToggle", "realVoices"]]) {
+  $("#" + id).onchange = (e) => { state[key] = e.target.checked; save(); renderVoiceHint(); if (session) renderConv(); };
 }
 
 /* ---------- conversation ---------- */
 let session = null;
 
-function startScenario(sc) {
+// Talk to someone. With Guided lessons this plays one of their scripted
+// conversations (epIdx, or the next one due); with the AI it's open-ended.
+function startChat(ch, epIdx) {
+  if (!canTalk(ch)) return;
+  closeWord();
+  stopSpeaking();
+  if (listening && recognizer) recognizer.stop();
+  const lessonsMode = state.engine === "lessons";
+  if (lessonsMode && epIdx == null) epIdx = nextEpisode(ch);
+  const episode = lessonsMode ? ch.episodes[epIdx] : null;
   session = {
-    sc, messages: [], exchanges: 0, xp: 0, loading: false, finished: false,
+    ch, episode, epIdx: lessonsMode ? epIdx : null, rank: rankFor(ch),
+    messages: [], exchanges: 0, xp: 0, bond: 0, loading: false, finished: false,
     engine: state.engine,
-    maxEx: state.engine === "lessons" ? lessons[sc.id].steps.length : MAX_EXCHANGES,
+    maxEx: episode ? episode.steps.length : MAX_EXCHANGES,
     prompt: "", answer: null, revealed: false,
     choices: [], wrong: new Set(), explanation: "", error: "",
   };
-  const s = SIGNS[sc.id] || {};
-  $("#convJp").textContent = s.jp || sc.title;
-  $("#convEn").textContent = sc.title;
+  $("#convJp").textContent = episode && episode.title_jp ? episode.title_jp : ch.name;
+  $("#convEn").textContent = episode ? `${ch.name_en}: ${episode.title}` : `Talking with ${ch.name_en}`;
+  $("#convBond").textContent = `絆 R${session.rank}`;
   $("#routeStops").innerHTML = "";
   for (let i = 0; i <= session.maxEx; i++) $("#routeStops").appendChild(el("span", "stop"));
   $("#home").classList.add("hidden");
@@ -943,7 +1368,7 @@ function startScenario(sc) {
 
 function leaveConversation() {
   closeWord();
-  speechSynthesis.cancel();
+  stopSpeaking();
   if (listening && recognizer) recognizer.stop();
   session = null;
   $("#conv").classList.add("hidden");
@@ -958,6 +1383,10 @@ function leaveConversation() {
 // Every turn we send the WHOLE transcript. The API is stateless, so this
 // resend is the tutor's memory.
 async function requestNext() {
+  // Remember which conversation asked. If the learner leaves or starts
+  // someone else before the reply arrives, the late reply is dropped
+  // instead of landing in the wrong conversation.
+  const mine = session;
   session.loading = true; session.choices = []; session.error = "";
   renderConv();
   try {
@@ -972,13 +1401,13 @@ async function requestNext() {
       const res = await fetch("/api/turn", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ engine: session.engine, scenario_id: session.sc.id, level: state.level, history }),
+        body: JSON.stringify({ engine: session.engine, character_id: session.ch.id, rank: session.rank, level: state.level, history }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "The tutor didn't respond.");
       turn = data.turn; raw = data.raw;
     }
-    if (!session) return;   // user left mid-request
+    if (session !== mine) return;   // user left mid-request
     // Feedback is about the learner's most recent message.
     if (turn.feedback) {
       for (let i = session.messages.length - 1; i >= 0; i--) {
@@ -990,17 +1419,19 @@ async function requestNext() {
     session.prompt = turn.prompt || ""; session.answer = turn.answer || null; session.revealed = false;
     session.choices = shuffle((turn.choices || []).slice(0, 3));
     session.wrong = new Set(); session.explanation = "";
-    if (state.autoSpeak) speak(turn.japanese);
+    if (state.autoSpeak) speakAs(session.ch, turn.japanese);
 
     if (session.exchanges >= session.maxEx) {
       session.finished = true;
       session.streakResult = completeLesson();
       award(XP.finish);
+      session.bond += BOND.finish;
+      session.bondResult = applyBond(session.ch, session.bond, session.epIdx);
     }
   } catch (err) {
-    if (session) session.error = err.message;
+    if (session === mine) session.error = err.message;
   } finally {
-    if (session) { session.loading = false; renderConv(); }
+    if (session === mine) { session.loading = false; renderConv(); }
   }
 }
 
@@ -1012,7 +1443,7 @@ function asTurn(line) { return { japanese: line.jp, reading: line.rd, english: l
 // Builds the next tutor turn from the script. Same shape the AI engines return,
 // so the rest of the UI doesn't care where a turn came from.
 function lessonTurn() {
-  const lesson = lessons[session.sc.id];
+  const lesson = session.episode;
   const k = session.exchanges;                    // learner replies so far
   if (k >= lesson.steps.length) return asTurn(lesson.closing);
   const s = lesson.steps[k];
@@ -1073,8 +1504,10 @@ async function sendFreeform() {
     const g = gradeLesson(text, session.answer);
     msg.feedback = g.feedback;
     award(g.xp);
+    if (g.feedback.good) session.bond += BOND.good;
   } else {
     award(XP.spoken);
+    session.bond += BOND.good;   // open-ended AI talk: every real reply counts
   }
   session.exchanges += 1;
   await requestNext();
@@ -1088,6 +1521,7 @@ async function pickChoice(i) {
   if (c.isBest) {
     session.messages.push({ role: "user", japanese: c.japanese, reading: c.reading, english: c.english });
     award(XP.choice);
+    if (!session.wrong.size) session.bond += BOND.good;   // right on the first try
     session.exchanges += 1;
     await requestNext();
   } else {
@@ -1245,7 +1679,7 @@ function plate(jp, en) {
 
 function lineView(m, latest) {
   if (m.role === "ai") {
-    const s = SIGNS[session.sc.id] || { who: ["相手", "Partner"] };
+    const ch = session.ch;
     const row = el("div", "line-ai" + (latest ? " latest" : ""));
     const box = el("div", "box");
     if (state.showReading && m.reading && m.reading !== m.japanese) box.appendChild(el("div", "rd", m.reading));
@@ -1254,10 +1688,10 @@ function lineView(m, latest) {
     const play = el("button", "play");
     play.setAttribute("aria-label", "Play this line");
     play.appendChild(icon("i-speaker"));
-    play.onclick = () => speak(m.japanese);
+    play.onclick = () => speakAs(ch, m.japanese);
     box.appendChild(play);
     if (latest) box.appendChild(el("span", "next"));
-    row.append(plate(s.who[0], s.who[1]), box);
+    row.append(plate(ch.name, ch.name_en), box);
     return row;
   }
   const wrap = el("div", "line-me");
@@ -1365,6 +1799,7 @@ function renderConv(opts = {}) {
       : `Today was already stamped, so your streak stays at ${days(r.after)}. Extra practice still counts toward your daily goal.`;
     $("#finXp").textContent = "+" + session.xp;
     $("#finStreak").textContent = days(r.after);
+    if (!session.bondShown) { renderBondResult(); session.bondShown = true; }
   }
 
   // Multiple-choice list
@@ -1401,6 +1836,39 @@ function renderConv(opts = {}) {
   }
 }
 
+// The bond panel on the finish screen: points gained, the rank meter, and on
+// a rank-up the facts and conversations it unlocked.
+function renderBondResult() {
+  const ch = session.ch, res = session.bondResult;
+  const box = $("#bondResult");
+  box.innerHTML = "";
+  if (!res) return;
+  const head = el("div", "bh");
+  const txt = el("div");
+  const t = el("div", "bt");
+  t.appendChild(el("span", "jp", "絆"));
+  t.appendChild(document.createTextNode(`${ch.name_en}  +${res.gained} bond`));
+  const pts = bondOf(ch.id).points;
+  txt.append(t, el("div", "bs", res.after >= MAX_RANK ? "Max rank reached."
+    : `${RANK_AT[res.after + 1] - pts} more to rank ${res.after + 1}`));
+  head.append(emblem(ch, true), txt);
+  box.append(head, pips(res.after, res.after - res.before));
+  if (res.after > res.before) {
+    box.appendChild(el("div", "rankup", `RANK UP!  ${res.before} → ${res.after}`));
+    for (const f of res.facts) {
+      const u = el("div", "unlock");
+      u.append(el("b", null, `New about ${ch.name_en} (rank ${f.rank})`), document.createTextNode(f.text));
+      box.appendChild(u);
+    }
+    for (const ep of res.episodes) {
+      const u = el("div", "unlock");
+      u.append(el("b", null, "New conversation unlocked"), document.createTextNode(`${ep.title}${ep.title_jp ? "  " + ep.title_jp : ""}`));
+      box.appendChild(u);
+    }
+  }
+  $("#convBond").textContent = `絆 R${res.after}`;
+}
+
 /* ---------- wire up ---------- */
 function setMode(quiet) {
   if (listening && recognizer) recognizer.stop();
@@ -1417,7 +1885,13 @@ function autosize() {
 
 $("#backBtn").onclick = leaveConversation;
 $("#doneBtn").onclick = leaveConversation;
-$("#againBtn").onclick = () => { const sc = session.sc; startScenario(sc); };
+// "Talk again" moves on to whatever's next (which may be a newly unlocked conversation).
+$("#againBtn").onclick = () => startChat(session.ch);
+$("#finProfileBtn").onclick = () => {
+  const r = session.bondResult;
+  openProfile(session.ch, r ? r.after - r.before : 0);
+};
+$("#convBond").onclick = () => openProfile(session.ch);
 $("#micBtn").onclick = toggleMic;
 $("#sendBtn").onclick = sendFreeform;
 $("#modeSpeak").onclick = () => setMode(false);
@@ -1430,8 +1904,17 @@ $("#drawerClose").onclick = closeDrawer;
 $("#drawerScrim").onclick = closeDrawer;
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && wordOpen) { closeWord(true); return; }
+  if (!$("#profile").classList.contains("hidden")) {
+    if (e.key === "Escape") closeProfile();
+    return;
+  }
   if (!$("#drawer").classList.contains("hidden")) {
     if (e.key === "Escape") closeDrawer();
+    return;
+  }
+  if (!session && (e.key === "p" || e.key === "P") && people[menuIndex]) {
+    e.preventDefault();
+    openProfile(people[menuIndex]);
     return;
   }
   // Menu: arrow keys move through the items, like a game menu.
@@ -1452,7 +1935,9 @@ document.addEventListener("keydown", (e) => {
 (async function init() {
   const res = await fetch("/api/config");
   config = await res.json();
-  lessons = await (await fetch("/api/lessons")).json();
+  const cast = await (await fetch("/api/characters")).json();
+  people = cast.characters || [];
+  renderProblems(cast.problems || []);
   if (!config.levels.includes(state.level)) state.level = config.levels[0];
   // First run: use the free local AI if it's set up, otherwise guided lessons.
   if (!config.engines.includes(state.engine)) {

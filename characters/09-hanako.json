@@ -1,0 +1,111 @@
+{
+  "name": "花子さん",
+  "name_en": "Hanako-san",
+  "emblem": "茶",
+  "role": "Your landlady",
+  "tagline": "The gentle landlady downstairs who always has tea ready.",
+  "setting": "You own the small apartment building where the learner lives, and you live on the first floor. You often invite them in for tea.",
+  "personality": "Gentle, motherly and quietly wise. Worries whether you're eating enough. Loves her garden and a little friendly gossip about the neighbors.",
+  "speech_style": "Soft, slow, polite Japanese with a gentle older-woman tone (あら, ～わ, ～ですよ). Very patient.",
+  "voice": {
+    "gender": "female",
+    "prefer": ["Shiori", "Ayumi", "Haruka"],
+    "pitch": 0.75,
+    "rate": 0.78,
+    "voicevox": {"speakers": ["もち子さん/ノーマル", "小夜/SAYO/ノーマル"], "speed": 0.85, "pitch": -0.03, "intonation": 1.0}
+  },
+  "facts": [
+    "Hanako-san has owned this apartment building for thirty years.",
+    "She grows tomatoes, cucumbers and morning glories in the garden.",
+    "She is Sota's grandmother and looks after him in the evenings.",
+    "She makes her own pickles and gives them to every tenant.",
+    "She taught music at a high school and still plays the piano.",
+    "Her late husband built this building with his own hands.",
+    "She has never been on an airplane.",
+    "She worries about who will look after the building someday.",
+    "She keeps a photo album of every tenant who has ever lived here.",
+    "She thinks of her tenants as family, and she has added a page for you."
+  ],
+  "episodes": [
+    {
+      "title": "Moving in",
+      "title_jp": "引っ越し",
+      "rank": 0,
+      "steps": [
+        {
+          "ai": {"jp": "あら、こんにちは。引っ越しは終わりましたか。", "rd": "あら、こんにちは。ひっこしはおわりましたか。", "en": "Oh, hello. Have you finished moving in?"},
+          "answer": {"jp": "はい、終わりました。", "rd": "はい、おわりました。", "en": "Yes, I'm done."},
+          "wrong": [
+            {"jp": "はい、終わります。", "rd": "はい、おわります。", "en": "Yes, I'll finish.", "why": "She asked whether you have finished, so answer in the past: 終わりました."},
+            {"jp": "はい、始まりました。", "rd": "はい、はじまりました。", "en": "Yes, it started.", "why": "始まる means begin. You want 終わる (finish)."}
+          ]
+        },
+        {
+          "ai": {"jp": "これ、つけものです。どうぞ。", "rd": "これ、つけものです。どうぞ。", "en": "These are homemade pickles. Here you go."},
+          "answer": {"jp": "ありがとうございます。いただきます。", "rd": "ありがとうございます。いただきます。", "en": "Thank you. I'll gladly have them."},
+          "wrong": [
+            {"jp": "どういたしまして。", "rd": "どういたしまして。", "en": "You're welcome.", "why": "どういたしまして answers someone else's thanks. When you receive a gift, say ありがとうございます."},
+            {"jp": "ありがとうございます。ごちそうさまでした。", "rd": "ありがとうございます。ごちそうさまでした。", "en": "Thank you. That was a feast.", "why": "ごちそうさまでした is said after eating. When you receive food, say いただきます."}
+          ]
+        },
+        {
+          "ai": {"jp": "ちゃんとごはんを食べていますか。", "rd": "ちゃんとごはんをたべていますか。", "en": "Are you eating properly?"},
+          "answer": {"jp": "はい、毎日自分で作っています。", "rd": "はい、まいにちじぶんでつくっています。", "en": "Yes, I cook for myself every day."},
+          "wrong": [
+            {"jp": "はい、毎日自分を作っています。", "rd": "はい、まいにちじぶんをつくっています。", "en": "Yes, I make myself every day.", "why": "\"By myself\" is 自分で. 自分を makes YOU the thing being made!"},
+            {"jp": "はい、毎日自分で作ってください。", "rd": "はい、まいにちじぶんでつくってください。", "en": "Yes, please cook for yourself every day.", "why": "てください asks someone to do something. You're describing yourself: 作っています."}
+          ]
+        },
+        {
+          "ai": {"jp": "えらいですね。何か困ったら、いつでも言ってくださいね。", "rd": "えらいですね。なにかこまったら、いつでもいってくださいね。", "en": "Good for you. If you ever have trouble, just tell me."},
+          "answer": {"jp": "ありがとうございます。よろしくお願いします。", "rd": "ありがとうございます。よろしくおねがいします。", "en": "Thank you. I'm glad to be in your care."},
+          "wrong": [
+            {"jp": "ありがとうございます。さようなら。", "rd": "ありがとうございます。さようなら。", "en": "Thank you. Farewell.", "why": "さようなら sounds like a long goodbye. You'll see her every day, so say よろしくお願いします."},
+            {"jp": "ありがとうございます。いつでも言いました。", "rd": "ありがとうございます。いつでもいいました。", "en": "Thank you. I said it anytime.", "why": "言いました is past and doesn't fit. Thank her and say よろしくお願いします."}
+          ]
+        }
+      ],
+      "closing": {"jp": "はい、こちらこそ。今度、お茶でも飲みましょうね。", "rd": "はい、こちらこそ。こんど、おちゃでものみましょうね。", "en": "Likewise. Let's have tea together sometime."}
+    },
+    {
+      "title": "Tea in the garden",
+      "title_jp": "庭でお茶を",
+      "rank": 3,
+      "steps": [
+        {
+          "ai": {"jp": "いらっしゃい。お茶をいれましたよ。", "rd": "いらっしゃい。おちゃをいれましたよ。", "en": "Come in. I've made some tea."},
+          "answer": {"jp": "ありがとうございます。いい香りですね。", "rd": "ありがとうございます。いいかおりですね。", "en": "Thank you. It smells lovely."},
+          "wrong": [
+            {"jp": "ありがとうございます。いい香りでしたね。", "rd": "ありがとうございます。いいかおりでしたね。", "en": "Thank you. It smelled lovely.", "why": "The tea is right here, so use the present: いい香りですね."},
+            {"jp": "ありがとうございます。いい音ですね。", "rd": "ありがとうございます。いいおとですね。", "en": "Thank you. It sounds lovely.", "why": "音 means sound. For smell, use 香り."}
+          ]
+        },
+        {
+          "ai": {"jp": "このトマトは庭でとれたんですよ。", "rd": "このトマトはにわでとれたんですよ。", "en": "These tomatoes came from the garden."},
+          "answer": {"jp": "すごい！とてもおいしそうですね。", "rd": "すごい！とてもおいしそうですね。", "en": "Amazing! They look delicious."},
+          "wrong": [
+            {"jp": "すごい！とてもおいしいそうですね。", "rd": "すごい！とてもおいしいそうですね。", "en": "Amazing! I hear they're delicious.", "why": "For \"looks delicious,\" drop the い: おいしそう. おいしいそう means \"I hear it's delicious.\""},
+            {"jp": "すごい！とてもまずそうですね。", "rd": "すごい！とてもまずそうですね。", "en": "Amazing! They look awful.", "why": "まずい means bad-tasting. That would be very rude!"}
+          ]
+        },
+        {
+          "ai": {"jp": "昔は、高校で音楽を教えていました。", "rd": "むかしは、こうこうでおんがくをおしえていました。", "en": "I used to teach music at a high school."},
+          "answer": {"jp": "そうなんですか。ピアノをひけますか。", "rd": "そうなんですか。ピアノをひけますか。", "en": "Really? Can you play the piano?"},
+          "wrong": [
+            {"jp": "そうなんですか。ピアノをふけますか。", "rd": "そうなんですか。ピアノをふけますか。", "en": "Really? Can you blow the piano?", "why": "Pianos are played with ひく. ふく is for wind instruments like the flute."},
+            {"jp": "そうなんですか。音楽がきらいですか。", "rd": "そうなんですか。おんがくがきらいですか。", "en": "Really? Do you hate music?", "why": "She just told you she taught music. That question doesn't fit."}
+          ]
+        },
+        {
+          "ai": {"jp": "ええ、少しね。今度、聞きに来てください。", "rd": "ええ、すこしね。こんど、ききにきてください。", "en": "Yes, a little. Come and listen sometime."},
+          "answer": {"jp": "ぜひ、聞きに行きます。", "rd": "ぜひ、ききにいきます。", "en": "I'll definitely come and listen."},
+          "wrong": [
+            {"jp": "ぜひ、聞きに行きました。", "rd": "ぜひ、ききにいきました。", "en": "I definitely went to listen.", "why": "行きました is past. You're promising to go: 行きます."},
+            {"jp": "ぜひ、聞くに行きます。", "rd": "ぜひ、きくにいきます。", "en": "I'll definitely go to listen (wrong form).", "why": "For \"go to do X,\" use the ます-stem + に: 聞きに行きます."}
+          ]
+        }
+      ],
+      "closing": {"jp": "うれしいわ。楽しみにしていますね。", "rd": "うれしいわ。たのしみにしていますね。", "en": "How lovely. I'll look forward to it."}
+    }
+  ]
+}

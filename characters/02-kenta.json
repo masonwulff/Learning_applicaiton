@@ -1,0 +1,119 @@
+{
+  "name": "健太",
+  "name_en": "Kenta",
+  "emblem": "豆",
+  "role": "Barista in Kyoto",
+  "tagline": "The calm barista at your favorite café.",
+  "setting": "You are a barista at a small café in Kyoto. The learner is a customer who keeps coming back.",
+  "personality": "Calm, warm and a bit shy. A perfectionist about coffee with a dry sense of humor. Opens up slowly, and talks with real passion about beans and roasting.",
+  "speech_style": "Polite customer-service Japanese at first (いらっしゃいませ, ～ですか). Gets more relaxed but stays polite as you become regulars.",
+  "voice": {
+    "gender": "male",
+    "prefer": ["Keita", "Ichiro"],
+    "pitch": 0.95,
+    "rate": 0.95,
+    "voicevox": {"speakers": ["玄野武宏/ノーマル", "雀松朱司/ノーマル"], "speed": 0.95, "pitch": -0.02, "intonation": 0.95}
+  },
+  "facts": [
+    "Kenta has worked at this café for three years.",
+    "He roasts the café's beans himself every Monday morning.",
+    "He's from a small town in Shiga Prefecture.",
+    "He practices latte art on his days off.",
+    "He can't drink coffee after 3 p.m. or he can't sleep.",
+    "He's saving money to open his own café.",
+    "When he's tired, he secretly prefers green tea.",
+    "He photographs temples on his early-morning walks.",
+    "His grandmother ran a tea shop, and that's how he fell in love with drinks.",
+    "He wants his own café to feel like his grandmother's tea shop."
+  ],
+  "episodes": [
+    {
+      "title": "Ordering coffee",
+      "title_jp": "カフェで注文",
+      "rank": 0,
+      "steps": [
+        {
+          "ai": {"jp": "いらっしゃいませ。ご注文はお決まりですか。", "rd": "いらっしゃいませ。ごちゅうもんはおきまりですか。", "en": "Welcome. Are you ready to order?"},
+          "answer": {"jp": "コーヒーをください。", "rd": "コーヒーをください。", "en": "Coffee, please."},
+          "wrong": [
+            {"jp": "コーヒーをありがとう。", "rd": "コーヒーをありがとう。", "en": "Coffee, thank you.", "why": "To ask for something, use をください, not ありがとう."},
+            {"jp": "コーヒーはいくらですか。", "rd": "コーヒーはいくらですか。", "en": "How much is coffee?", "why": "That asks the price instead of placing an order."}
+          ]
+        },
+        {
+          "ai": {"jp": "ホットですか、アイスですか。", "rd": "ホットですか、アイスですか。", "en": "Hot or iced?"},
+          "answer": {"jp": "アイスをお願いします。", "rd": "アイスをおねがいします。", "en": "Iced, please."},
+          "wrong": [
+            {"jp": "アイスですか。", "rd": "アイスですか。", "en": "Is it iced?", "why": "Adding か turns your reply into a question."},
+            {"jp": "アイスをあげます。", "rd": "アイスをあげます。", "en": "I'll give you iced.", "why": "あげます means to give. Use をお願いします to request something."}
+          ]
+        },
+        {
+          "ai": {"jp": "サイズはどうしますか。", "rd": "サイズはどうしますか。", "en": "What size would you like?"},
+          "answer": {"jp": "Mサイズをお願いします。", "rd": "エムサイズをおねがいします。", "en": "A medium, please."},
+          "wrong": [
+            {"jp": "Mサイズはいくつですか。", "rd": "エムサイズはいくつですか。", "en": "How many mediums are there?", "why": "いくつ asks about quantity, not what you want."},
+            {"jp": "Mサイズでした。", "rd": "エムサイズでした。", "en": "It was a medium.", "why": "でした is past tense, but you are ordering right now."}
+          ]
+        },
+        {
+          "ai": {"jp": "こちらでお召し上がりですか。お持ち帰りですか。", "rd": "こちらでおめしあがりですか。おもちかえりですか。", "en": "For here, or to go?"},
+          "answer": {"jp": "持ち帰りでお願いします。", "rd": "もちかえりでおねがいします。", "en": "To go, please."},
+          "wrong": [
+            {"jp": "持ち帰りに行きました。", "rd": "もちかえりにいきました。", "en": "I went to-go.", "why": "行きました is past tense of go and does not answer the question."},
+            {"jp": "はい、そうです。", "rd": "はい、そうです。", "en": "Yes, that's right.", "why": "It is an either-or question, so yes/no does not answer it."}
+          ]
+        },
+        {
+          "ai": {"jp": "四百八十円です。", "rd": "よんひゃくはちじゅうえんです。", "en": "That will be 480 yen."},
+          "answer": {"jp": "カードでお願いします。", "rd": "カードでおねがいします。", "en": "By card, please."},
+          "wrong": [
+            {"jp": "カードはおいしいです。", "rd": "カードはおいしいです。", "en": "The card is delicious.", "why": "おいしい is for food."},
+            {"jp": "いただきます。", "rd": "いただきます。", "en": "Let's eat.", "why": "いただきます is said before eating, not when paying."}
+          ]
+        }
+      ],
+      "closing": {"jp": "ありがとうございました。またお越しください。", "rd": "ありがとうございました。またおこしください。", "en": "Thank you. Please come again."}
+    },
+    {
+      "title": "The usual",
+      "title_jp": "いつもの",
+      "rank": 3,
+      "steps": [
+        {
+          "ai": {"jp": "あ、いらっしゃいませ。いつものですか。", "rd": "あ、いらっしゃいませ。いつものですか。", "en": "Oh, welcome. The usual?"},
+          "answer": {"jp": "はい、いつものをお願いします。", "rd": "はい、いつものをおねがいします。", "en": "Yes, the usual please."},
+          "wrong": [
+            {"jp": "はい、いつもです。", "rd": "はい、いつもです。", "en": "Yes, always.", "why": "いつも alone means \"always.\" Add の for \"the usual (one)\": いつもの."},
+            {"jp": "いいえ、いつものをください。", "rd": "いいえ、いつものをください。", "en": "No, the usual please.", "why": "いいえ (no) contradicts asking for the usual. Start with はい."}
+          ]
+        },
+        {
+          "ai": {"jp": "今日は新しい豆がありますよ。飲んでみますか。", "rd": "きょうはあたらしいまめがありますよ。のんでみますか。", "en": "We have new beans today. Want to try them?"},
+          "answer": {"jp": "はい、飲んでみたいです。", "rd": "はい、のんでみたいです。", "en": "Yes, I'd like to try them."},
+          "wrong": [
+            {"jp": "はい、飲みてみたいです。", "rd": "はい、のみてみたいです。", "en": "Yes, I'd like to try (wrong form).", "why": "The て-form of 飲む is 飲んで: 飲んでみたいです."},
+            {"jp": "はい、食べてみたいです。", "rd": "はい、たべてみたいです。", "en": "Yes, I'd like to try eating them.", "why": "Coffee is something you drink (飲む), not eat (食べる)."}
+          ]
+        },
+        {
+          "ai": {"jp": "エチオピアの豆です。少しフルーティーです。", "rd": "エチオピアのまめです。すこしフルーティーです。", "en": "They're Ethiopian beans. A little fruity."},
+          "answer": {"jp": "いいにおいですね。", "rd": "いいにおいですね。", "en": "It smells nice."},
+          "wrong": [
+            {"jp": "いいにおいでしたね。", "rd": "いいにおいでしたね。", "en": "It smelled nice.", "why": "The coffee is right in front of you, so use the present: いいにおいですね."},
+            {"jp": "いいにおいますね。", "rd": "いいにおいますね。", "en": "It smells nice (wrong form).", "why": "におい is a noun, so it takes です: いいにおいですね."}
+          ]
+        },
+        {
+          "ai": {"jp": "実は、この豆はぼくが焼きました。", "rd": "じつは、このまめはぼくがやきました。", "en": "Actually, I roasted these beans myself."},
+          "answer": {"jp": "本当ですか。すごいですね！", "rd": "ほんとうですか。すごいですね！", "en": "Really? That's amazing!"},
+          "wrong": [
+            {"jp": "本当ですか。ひどいですね！", "rd": "ほんとうですか。ひどいですね！", "en": "Really? That's terrible!", "why": "ひどい means terrible. Use すごい for \"amazing.\""},
+            {"jp": "本当ですか。すごいでしたね！", "rd": "ほんとうですか。すごいでしたね！", "en": "Really? That was amazing (wrong form)!", "why": "すごい is an い-adjective, so never でした. Here just say すごいですね."}
+          ]
+        }
+      ],
+      "closing": {"jp": "ありがとうございます。またいつでも来てくださいね。", "rd": "ありがとうございます。またいつでもきてくださいね。", "en": "Thank you. Come by anytime."}
+    }
+  ]
+}

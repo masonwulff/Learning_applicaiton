@@ -1,0 +1,119 @@
+{
+  "name": "ゆき",
+  "name_en": "Yuki",
+  "emblem": "星",
+  "role": "University student",
+  "tagline": "A bubbly student you meet at a language exchange.",
+  "setting": "You met the learner at a language exchange event in Tokyo. Later you run into each other around the city.",
+  "personality": "Cheerful, curious and a little clumsy. Asks lots of questions and gets excited easily, especially about music and buildings. Warm and encouraging with learners.",
+  "speech_style": "Friendly polite です/ます form. Often ends sentences with ね and よ. Says すごい! a lot.",
+  "voice": {
+    "gender": "female",
+    "prefer": ["Aoi", "Nanami", "Haruka"],
+    "pitch": 1.15,
+    "rate": 1.05,
+    "voicevox": {"speakers": ["春日部つむぎ/ノーマル", "冥鳴ひまり/ノーマル"], "speed": 1.05, "pitch": 0.0, "intonation": 1.15}
+  },
+  "facts": [
+    "Yuki is a second-year university student in Tokyo.",
+    "She studies architecture and loves old wooden buildings.",
+    "She plays keyboard in a small band with friends.",
+    "She grew up in Sapporo, so Tokyo summers are hard on her.",
+    "She can't cook at all and lives on convenience-store onigiri.",
+    "Her band plays a live show once a month in Shimokitazawa.",
+    "She wants to study abroad in Europe someday.",
+    "She's afraid of dogs, even tiny ones.",
+    "She keeps a sketchbook of every building she has fallen in love with.",
+    "Her dream is to design a library her hometown can be proud of."
+  ],
+  "episodes": [
+    {
+      "title": "Nice to meet you",
+      "title_jp": "はじめまして",
+      "rank": 0,
+      "steps": [
+        {
+          "ai": {"jp": "こんにちは！はじめまして。ゆきです。", "rd": "こんにちは！はじめまして。ゆきです。", "en": "Hello! Nice to meet you. I'm Yuki."},
+          "answer": {"jp": "はじめまして。ジョンです。よろしくお願いします。", "rd": "はじめまして。ジョンです。よろしくおねがいします。", "en": "Nice to meet you. I'm John (use your own name). Pleased to meet you."},
+          "wrong": [
+            {"jp": "さようなら。ジョンです。", "rd": "さようなら。ジョンです。", "en": "Goodbye. I'm John.", "why": "さようなら means goodbye, but you are just meeting."},
+            {"jp": "ありがとうございます。ジョンです。", "rd": "ありがとうございます。ジョンです。", "en": "Thank you. I'm John.", "why": "ありがとう is thanks. When you first meet someone, say はじめまして."}
+          ]
+        },
+        {
+          "ai": {"jp": "ジョンさんは、どこから来ましたか。", "rd": "ジョンさんは、どこからきましたか。", "en": "Where are you from, John?"},
+          "answer": {"jp": "アメリカから来ました。", "rd": "アメリカからきました。", "en": "I came from America. (swap in your own country)"},
+          "wrong": [
+            {"jp": "アメリカへ行きます。", "rd": "アメリカへいきます。", "en": "I'm going to America.", "why": "行きます means go. The question asks where you came from, so use 来ました."},
+            {"jp": "アメリカですか。", "rd": "アメリカですか。", "en": "Is it America?", "why": "The か at the end makes this a question, but you need to answer."}
+          ]
+        },
+        {
+          "ai": {"jp": "そうですか。趣味は何ですか。", "rd": "そうですか。しゅみはなんですか。", "en": "I see. What's your hobby?"},
+          "answer": {"jp": "音楽が好きです。", "rd": "おんがくがすきです。", "en": "I like music."},
+          "wrong": [
+            {"jp": "音楽を好きです。", "rd": "おんがくをすきです。", "en": "I like music (wrong particle).", "why": "好き takes が, not を: 音楽が好きです."},
+            {"jp": "音楽は食べます。", "rd": "おんがくはたべます。", "en": "I eat music.", "why": "食べます means eat, which does not fit music."}
+          ]
+        },
+        {
+          "ai": {"jp": "わたしも音楽が好きです。日本語はどうですか。", "rd": "わたしもおんがくがすきです。にほんごはどうですか。", "en": "I like music too. How is Japanese?"},
+          "answer": {"jp": "日本語はおもしろいです。", "rd": "にほんごはおもしろいです。", "en": "Japanese is interesting."},
+          "wrong": [
+            {"jp": "日本語はおもしろいでした。", "rd": "にほんごはおもしろいでした。", "en": "Japanese was interesting (wrong form).", "why": "い-adjectives form the past with かった (おもしろかったです), and the question is about now anyway."},
+            {"jp": "日本語はおいしいです。", "rd": "にほんごはおいしいです。", "en": "Japanese is delicious.", "why": "おいしい describes food, not a language."}
+          ]
+        },
+        {
+          "ai": {"jp": "ラインを交換しませんか。", "rd": "ラインをこうかんしませんか。", "en": "Shall we exchange LINE contacts?"},
+          "answer": {"jp": "はい、お願いします。", "rd": "はい、おねがいします。", "en": "Yes, please."},
+          "wrong": [
+            {"jp": "はい、ごめんなさい。", "rd": "はい、ごめんなさい。", "en": "Yes, I'm sorry.", "why": "ごめんなさい is an apology, which does not fit accepting an offer."},
+            {"jp": "いいえ、どういたしまして。", "rd": "いいえ、どういたしまして。", "en": "No, you're welcome.", "why": "どういたしまして is the reply to thank you, not to an invitation."}
+          ]
+        }
+      ],
+      "closing": {"jp": "今日はありがとう。またね！", "rd": "きょうはありがとう。またね！", "en": "Thanks for today. See you!"}
+    },
+    {
+      "title": "The live show",
+      "title_jp": "ライブの話",
+      "rank": 3,
+      "steps": [
+        {
+          "ai": {"jp": "こんにちは！今日は暑いですね。", "rd": "こんにちは！きょうはあついですね。", "en": "Hi! It's hot today, isn't it?"},
+          "answer": {"jp": "そうですね。とても暑いです。", "rd": "そうですね。とてもあついです。", "en": "It is. It's very hot."},
+          "wrong": [
+            {"jp": "そうですね。とても寒いです。", "rd": "そうですね。とてもさむいです。", "en": "It is. It's very cold.", "why": "寒い means cold. She said it's hot: 暑い."},
+            {"jp": "はい、暑いでした。", "rd": "はい、あついでした。", "en": "Yes, it was hot (wrong form).", "why": "い-adjectives never take でした. And it's hot now, so say 暑いです."}
+          ]
+        },
+        {
+          "ai": {"jp": "今度の土曜日、バンドのライブがあります。", "rd": "こんどのどようび、バンドのライブがあります。", "en": "My band has a live show this Saturday."},
+          "answer": {"jp": "すごいですね！どこでありますか。", "rd": "すごいですね！どこでありますか。", "en": "Amazing! Where is it?"},
+          "wrong": [
+            {"jp": "すごいですね！どこにありますか。", "rd": "すごいですね！どこにありますか。", "en": "Amazing! Where is it located?", "why": "Events take place with で: どこでありますか. に is for where an object sits."},
+            {"jp": "いいえ、ライブです。", "rd": "いいえ、ライブです。", "en": "No, it's a live show.", "why": "She didn't ask a yes/no question. React to her news instead."}
+          ]
+        },
+        {
+          "ai": {"jp": "下北沢のライブハウスです。ジョンさんも来ませんか。", "rd": "しもきたざわのライブハウスです。ジョンさんもきませんか。", "en": "It's at a club in Shimokitazawa. Would you like to come too?"},
+          "answer": {"jp": "はい、ぜひ行きたいです。", "rd": "はい、ぜひいきたいです。", "en": "Yes, I'd love to go."},
+          "wrong": [
+            {"jp": "はい、ぜひ来たいです。", "rd": "はい、ぜひきたいです。", "en": "Yes, I'd love to come (wrong verb).", "why": "From where you stand, you GO to the show: 行きたい. 来る is movement toward the speaker."},
+            {"jp": "いいえ、ぜひ。", "rd": "いいえ、ぜひ。", "en": "No, definitely.", "why": "ぜひ goes with a yes. いいえ, ぜひ contradicts itself."}
+          ]
+        },
+        {
+          "ai": {"jp": "やった！何時に会いましょうか。", "rd": "やった！なんじにあいましょうか。", "en": "Yay! What time shall we meet?"},
+          "answer": {"jp": "六時はどうですか。", "rd": "ろくじはどうですか。", "en": "How about six o'clock?"},
+          "wrong": [
+            {"jp": "六時間はどうですか。", "rd": "ろくじかんはどうですか。", "en": "How about six hours?", "why": "時間 is a length of time. For a time on the clock, say 六時."},
+            {"jp": "六時に会いました。", "rd": "ろくじにあいました。", "en": "We met at six.", "why": "会いました is past. You're making plans, so suggest a time: 六時はどうですか."}
+          ]
+        }
+      ],
+      "closing": {"jp": "じゃあ、六時に駅で待っていますね！", "rd": "じゃあ、ろくじにえきでまっていますね！", "en": "OK, I'll wait for you at the station at six!"}
+    }
+  ]
+}

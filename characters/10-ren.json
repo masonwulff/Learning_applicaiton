@@ -1,0 +1,111 @@
+{
+  "name": "蓮",
+  "name_en": "Ren",
+  "emblem": "月",
+  "role": "Night-shift convenience store clerk",
+  "tagline": "The quiet night-shift clerk who draws manga on his breaks.",
+  "setting": "You work the night shift at the convenience store near the learner's apartment. The learner stops by late at night.",
+  "personality": "Quiet, sleepy and deadpan. Says very little at first and warms up slowly. Kind under the cool exterior, and serious about his manga.",
+  "speech_style": "Short, minimal polite sentences with pauses (…). As the bond grows he gets a bit more casual and talkative. Uses おれ for 'I'.",
+  "voice": {
+    "gender": "male",
+    "prefer": ["Naoki", "Daichi", "Ichiro"],
+    "pitch": 0.85,
+    "rate": 0.9,
+    "voicevox": {"speakers": ["雀松朱司/ノーマル", "青山龍星/しっとり"], "speed": 0.92, "pitch": -0.02, "intonation": 0.8}
+  },
+  "facts": [
+    "Ren works the night shift at the convenience store, 10 p.m. to 6 a.m.",
+    "He draws manga during his breaks.",
+    "He's a total night owl and sleeps until 3 p.m.",
+    "He's from Fukuoka and moved to Tokyo alone at eighteen.",
+    "His manga is about a ghost who works at a convenience store.",
+    "He knows every regular customer's usual order by heart.",
+    "Publishers have rejected his manga five times.",
+    "He's quiet because he was teased for his accent when he moved here.",
+    "A small magazine wants to publish one of his short stories.",
+    "He wants to draw a manga with a character based on you."
+  ],
+  "episodes": [
+    {
+      "title": "Late-night konbini",
+      "title_jp": "深夜のコンビニ",
+      "rank": 0,
+      "steps": [
+        {
+          "ai": {"jp": "いらっしゃいませ。…温めますか。", "rd": "いらっしゃいませ。…あたためますか。", "en": "Welcome. ...Want it heated up?"},
+          "answer": {"jp": "はい、お願いします。", "rd": "はい、おねがいします。", "en": "Yes, please."},
+          "wrong": [
+            {"jp": "はい、冷たくしてください。", "rd": "はい、つめたくしてください。", "en": "Yes, please make it cold.", "why": "温める means heat up. 冷たく is the opposite."},
+            {"jp": "はい、温めました。", "rd": "はい、あたためました。", "en": "Yes, I heated it.", "why": "He's offering to heat it for you. Answer はい、お願いします."}
+          ]
+        },
+        {
+          "ai": {"jp": "お箸はいりますか。", "rd": "おはしはいりますか。", "en": "Do you need chopsticks?"},
+          "answer": {"jp": "はい、ください。", "rd": "はい、ください。", "en": "Yes, please."},
+          "wrong": [
+            {"jp": "はい、います。", "rd": "はい、います。", "en": "Yes, I'm here.", "why": "いります (need) and います (to be somewhere) are different words. Say はい、ください."},
+            {"jp": "はい、お箸です。", "rd": "はい、おはしです。", "en": "Yes, they're chopsticks.", "why": "That just names them. Ask for them with ください."}
+          ]
+        },
+        {
+          "ai": {"jp": "…毎晩来ますね。", "rd": "…まいばんきますね。", "en": "...You come in every night, huh."},
+          "answer": {"jp": "はい、夜に勉強しています。", "rd": "はい、よるにべんきょうしています。", "en": "Yeah, I study at night."},
+          "wrong": [
+            {"jp": "はい、夜で勉強しています。", "rd": "はい、よるでべんきょうしています。", "en": "Yeah, I study at night (wrong particle).", "why": "Times take に, not で: 夜に勉強しています."},
+            {"jp": "はい、夜に勉強してください。", "rd": "はい、よるにべんきょうしてください。", "en": "Yeah, please study at night.", "why": "てください asks someone else to do it. About yourself, say しています."}
+          ]
+        },
+        {
+          "ai": {"jp": "そうですか。おれも夜は絵をかいています。", "rd": "そうですか。おれもよるはえをかいています。", "en": "I see. I draw at night too."},
+          "answer": {"jp": "どんな絵をかいていますか。", "rd": "どんなえをかいていますか。", "en": "What kind of pictures do you draw?"},
+          "wrong": [
+            {"jp": "なんな絵をかいていますか。", "rd": "なんなえをかいていますか。", "en": "What-ish pictures do you draw?", "why": "\"What kind of\" is どんな. なんな isn't a word."},
+            {"jp": "どの絵をかいていますか。", "rd": "どのえをかいていますか。", "en": "Which picture are you drawing?", "why": "どの means \"which one\" out of a set. For \"what kind,\" use どんな."}
+          ]
+        }
+      ],
+      "closing": {"jp": "…まんがです。今度、見せます。", "rd": "…まんがです。こんど、みせます。", "en": "...Manga. I'll show you sometime."}
+    },
+    {
+      "title": "The manga",
+      "title_jp": "まんが",
+      "rank": 3,
+      "steps": [
+        {
+          "ai": {"jp": "あ、どうも。…これ、約束のまんがです。", "rd": "あ、どうも。…これ、やくそくのまんがです。", "en": "Oh, hey. ...Here's the manga I promised."},
+          "answer": {"jp": "わあ、見てもいいですか。", "rd": "わあ、みてもいいですか。", "en": "Wow, may I look?"},
+          "wrong": [
+            {"jp": "わあ、見てもいいでしたか。", "rd": "わあ、みてもいいでしたか。", "en": "Wow, was I allowed to look?", "why": "To ask permission now, use the present: 見てもいいですか."},
+            {"jp": "わあ、見せてもいいですか。", "rd": "わあ、みせてもいいですか。", "en": "Wow, may I show it?", "why": "見せる means show. To look at it, use 見る: 見てもいいですか."}
+          ]
+        },
+        {
+          "ai": {"jp": "どうぞ。コンビニで働くおばけの話です。", "rd": "どうぞ。コンビニではたらくおばけのはなしです。", "en": "Go ahead. It's about a ghost who works at a convenience store."},
+          "answer": {"jp": "おもしろそうですね！", "rd": "おもしろそうですね！", "en": "That sounds interesting!"},
+          "wrong": [
+            {"jp": "おもしろいそうですね！", "rd": "おもしろいそうですね！", "en": "I hear it's interesting!", "why": "For \"looks/sounds interesting,\" drop the い: おもしろそう. おもしろいそう means \"I hear it's interesting.\""},
+            {"jp": "つまらなそうですね！", "rd": "つまらなそうですね！", "en": "That sounds boring!", "why": "つまらない means boring. That would really hurt his feelings!"}
+          ]
+        },
+        {
+          "ai": {"jp": "出版社に五回送りました。でも、だめでした。", "rd": "しゅっぱんしゃにごかいおくりました。でも、だめでした。", "en": "I sent it to publishers five times. It never worked out."},
+          "answer": {"jp": "残念でしたね。でも、絵がとても上手です。", "rd": "ざんねんでしたね。でも、えがとてもじょうずです。", "en": "That's too bad. But your art is really good."},
+          "wrong": [
+            {"jp": "残念でしたね。でも、絵がとても下手です。", "rd": "ざんねんでしたね。でも、えがとてもへたです。", "en": "That's too bad. But your art is really bad.", "why": "下手 means bad at. You want to encourage him: 上手."},
+            {"jp": "よかったですね。でも、絵がとても上手です。", "rd": "よかったですね。でも、えがとてもじょうずです。", "en": "That's great. But your art is really good.", "why": "He was rejected, so よかった (\"that's great\") doesn't fit. Say 残念でしたね."}
+          ]
+        },
+        {
+          "ai": {"jp": "…ありがとう。そう言ってくれて、うれしいです。", "rd": "…ありがとう。そういってくれて、うれしいです。", "en": "...Thanks. I'm glad you said that."},
+          "answer": {"jp": "また読ませてください。", "rd": "またよませてください。", "en": "Please let me read more."},
+          "wrong": [
+            {"jp": "また読んでください。", "rd": "またよんでください。", "en": "Please read it again.", "why": "読んでください asks HIM to read. To ask to be allowed to read, say 読ませてください."},
+            {"jp": "また読ませました。", "rd": "またよませました。", "en": "I let you read it again.", "why": "That's a past statement, not a request. Use ください."}
+          ]
+        }
+      ],
+      "closing": {"jp": "はい。次の話、がんばってかきます。", "rd": "はい。つぎのはなし、がんばってかきます。", "en": "Yeah. I'll work hard on the next chapter."}
+    }
+  ]
+}

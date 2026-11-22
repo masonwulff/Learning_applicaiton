@@ -12,8 +12,9 @@ from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request
 
+import tts
 import words
 
 BASE = Path(__file__).parent
@@ -23,21 +24,7 @@ app = Flask(__name__)
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:3b")
-
-SCENARIOS = [
-    {"id": "greetings", "emoji": "👋", "title": "Meeting someone new",
-     "setup": "The learner just met you at a language exchange event in Tokyo. You are Yuki, a friendly university student. Make introductions and small talk (name, where they are from, hobbies)."},
-    {"id": "cafe", "emoji": "☕️", "title": "Ordering at a café",
-     "setup": "You are a barista at a café in Kyoto. The learner is a customer. Take their order, ask about size, hot or iced, for here or to go, and handle payment."},
-    {"id": "directions", "emoji": "🚉", "title": "Asking for directions",
-     "setup": "You are a helpful local near Shinjuku Station. The learner is a lost tourist asking how to get somewhere. Give simple directions and clarify when they ask."},
-    {"id": "restaurant", "emoji": "🍜", "title": "At a restaurant",
-     "setup": "You are a waiter at a ramen restaurant in Osaka. Seat the learner, explain the menu, take their order, and handle questions about ingredients."},
-    {"id": "shopping", "emoji": "🛍️", "title": "Shopping",
-     "setup": "You are a shop clerk at a clothing store in Harajuku. Help the learner find something, talk about sizes, colors and price."},
-    {"id": "friend", "emoji": "🎮", "title": "Chatting with a friend",
-     "setup": "You are Haruto, a casual friend of the learner. Chat about weekend plans, games, food and daily life. Use polite-casual speech suitable for a learner."},
-]
+OLLAMA_MAX_TOKENS = 900   # hard cap per reply; see call_ollama
 
 LEVELS = {
     "Beginner": "Absolute beginner (JLPT N5 and below). Use very short sentences, polite です/ます form, and only the most common words.",
@@ -45,18 +32,91 @@ LEVELS = {
     "Intermediate": "Intermediate (around JLPT N3). Natural polite speech, some casual phrasing, longer sentences, common idioms.",
 }
 
-with open(BASE / "lessons.json", encoding="utf-8") as f:
-    LESSONS = json.load(f)
+CHAR_DIR = BASE / "characters"
+MAX_RANK = 10
+
+
+def load_characters():
+    """Read every characters/*.json file, in filename order.
+
+    Files are re-read on every request, so editing a character and refreshing
+    the page is enough: no server restart needed. A broken file is skipped
+    and reported, so one typo doesn't take down the whole app."""
+    chars, problems, seen = [], [], set()
+    for path in sorted(CHAR_DIR.glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            problems.append(f"{path.name}: line {exc.lineno}, column {exc.colno}: {exc.msg}")
+            continue
+        missing = [k for k in ("name", "name_en", "personality") if not data.get(k)]
+        if missing:
+            problems.append(f"{path.name}: missing {', '.join(missing)}")
+            continue
+        # The id comes from the file name without its number: 01-yuki.json -> yuki.
+        cid = path.stem.split("-", 1)[1] if "-" in path.stem and path.stem.split("-", 1)[0].isdigit() else path.stem
+        if cid in seen:
+            problems.append(f"{path.name}: another file already uses the id '{cid}'")
+            continue
+        seen.add(cid)
+        bad_ep = []
+        episodes = []
+        for i, ep in enumerate(data.get("episodes") or []):
+            steps = ep.get("steps") or []
+            ok = steps and ep.get("closing") and all(
+                isinstance(st.get("ai"), dict) and isinstance(st.get("answer"), dict) and isinstance(st.get("wrong"), list)
+                for st in steps)
+            if ok:
+                ep.setdefault("rank", 0)
+                ep.setdefault("title", f"Conversation {i + 1}")
+                episodes.append(ep)
+            else:
+                bad_ep.append(str(i + 1))
+        if bad_ep:
+            problems.append(f"{path.name}: skipped episode(s) {', '.join(bad_ep)} (each needs steps with ai/answer/wrong, and a closing line)")
+        data["episodes"] = episodes
+        data["facts"] = [str(f) for f in (data.get("facts") or [])][:MAX_RANK]
+        data["voice"] = data.get("voice") or {}
+        data["id"] = cid
+        data["file"] = f"characters/{path.name}"
+        chars.append(data)
+    return chars, problems
+
+
+def find_character(cid):
+    return next((c for c in load_characters()[0] if c["id"] == cid), None)
 
 
 # --------------------------------------------------------------------------
-# Prompt + reply handling (used by the two AI engines)
+# Prompt + reply handling (used by the AI engine)
 # --------------------------------------------------------------------------
 
-def system_prompt(scenario: dict, level: str) -> str:
-    return f"""You are a warm, patient Japanese conversation partner helping an English speaker learn to SPEAK Japanese through realistic role-play.
+def relationship(rank: int) -> str:
+    if rank <= 1:
+        return "You have only just met the learner. Be friendly but a little reserved, like with a new acquaintance."
+    if rank <= 4:
+        return "You know the learner a bit now. Be warmer and more relaxed, and show some of your personality."
+    if rank <= 7:
+        return "You are good friends with the learner. Be open, joke around, and talk about your own life."
+    return "You are close friends with the learner and trust them. You share personal worries and dreams."
 
-    SCENARIO: {scenario["setup"]}
+
+def system_prompt(ch: dict, level: str, rank: int) -> str:
+    facts = ch.get("facts") or []
+    known = facts[:rank]
+    nxt = facts[rank] if rank < len(facts) else None
+    known_txt = "\n".join(f"    - {f}" for f in known) or "    - Nothing yet. You have just met."
+    share_txt = (f"Somewhere in this conversation, if it fits naturally, bring up this about yourself in simple Japanese: {nxt}"
+                 if nxt else "The learner already knows you very well. Talk like old friends.")
+    return f"""You are {ch["name_en"]} ({ch["name"]}), {ch.get("role", "")}. You are a character in a Japanese speaking-practice app, talking with an English speaker who is learning Japanese.
+
+    SETTING: {ch.get("setting", "")}
+    YOUR PERSONALITY: {ch["personality"]}
+    HOW YOU TALK: {ch.get("speech_style", "Natural, friendly Japanese.")}
+    RELATIONSHIP: Bond rank {rank} of {MAX_RANK}. {relationship(rank)}
+    THINGS THE LEARNER ALREADY KNOWS ABOUT YOU (stay consistent with these):
+{known_txt}
+    THIS TIME: {share_txt}
     LEVEL: {LEVELS[level]}
 
     RULES
@@ -157,10 +217,18 @@ def call_ollama(system: str, messages: list) -> str:
         "stream": False,
         "format": "json",
         "messages": [{"role": "system", "content": system}] + messages,
-        "options": {"temperature": 0.6},
+        # A normal reply is ~250-400 tokens. Small models sometimes get stuck
+        # emitting endless whitespace inside JSON mode; num_predict stops that
+        # after a few seconds instead of letting it run for minutes. Ollama
+        # answers one request at a time, so one runaway reply would otherwise
+        # make every later reply wait in line behind it.
+        "options": {"temperature": 0.6, "num_predict": OLLAMA_MAX_TOKENS},
     }
     try:
-        resp = requests.post(f"{OLLAMA_URL}/api/chat", json=body, timeout=240)
+        # 90s leaves room for loading the model into memory on the first turn.
+        resp = requests.post(f"{OLLAMA_URL}/api/chat", json=body, timeout=90)
+    except requests.Timeout:
+        raise ModelError("The local AI took too long to answer. Try again.", 504)
     except requests.RequestException as exc:
         raise ModelError(f"Could not reach Ollama at {OLLAMA_URL}: {exc}")
     if resp.status_code != 200:
@@ -194,17 +262,40 @@ def config():
     if ollama["running"] and ollama["installed"]:
         engines.append("ollama")
     return jsonify({
-        "scenarios": [{k: s[k] for k in ("id", "emoji", "title")} for s in SCENARIOS],
         "levels": list(LEVELS),
         "engines": engines,
         "ollama": ollama,
         "words": words.status(),
+        "voicevox": tts.status(),
     })
 
 
-@app.get("/api/lessons")
-def lessons():
-    return jsonify(LESSONS)
+@app.get("/api/characters")
+def characters():
+    chars, problems = load_characters()
+    for ch in chars:
+        ch["voice_credit"] = tts.credit(ch["voice"].get("voicevox"))
+    return jsonify(characters=chars, problems=problems)
+
+
+@app.post("/api/tts")
+def speak():
+    """Read a line aloud with VOICEVOX.
+    Body: {"text": "...", "character_id": "yuki" (optional)} -> audio/wav.
+    Without a character, the default announcer voice is used."""
+    data = request.get_json(silent=True) or {}
+    text = str(data.get("text") or "").strip()
+    if not text or len(text) > 300:
+        return jsonify(error="text must be 1-300 characters"), 400
+    cfg = None
+    if data.get("character_id"):
+        ch = find_character(data["character_id"])
+        cfg = (ch or {}).get("voice", {}).get("voicevox")
+    try:
+        wav = tts.synthesize(text, cfg)
+    except tts.TTSError as exc:
+        return jsonify(error=str(exc)), 503
+    return Response(wav, mimetype="audio/wav", headers={"Cache-Control": "private, max-age=86400"})
 
 
 @app.post("/api/words")
@@ -226,28 +317,37 @@ def word_split():
 def turn():
     data = request.get_json(silent=True) or {}
     engine = data.get("engine")
-    scenario = next((s for s in SCENARIOS if s["id"] == data.get("scenario_id")), None)
+    ch = find_character(data.get("character_id"))
     level = data.get("level")
+    try:
+        rank = max(0, min(MAX_RANK, int(data.get("rank") or 0)))
+    except (TypeError, ValueError):
+        rank = 0
     if engine != "ollama":
         return jsonify(error="Unknown engine."), 400
-    if scenario is None or level not in LEVELS:
-        return jsonify(error="Unknown scenario or level."), 400
+    if ch is None or level not in LEVELS:
+        return jsonify(error="Unknown character or level."), 400
 
     history = data.get("history") or []
     if not isinstance(history, list) or len(history) > 40:
         return jsonify(error="Bad history."), 400
 
-    system = system_prompt(scenario, level)
+    system = system_prompt(ch, level, rank)
     messages = build_messages(history)
-    try:
-        text = call_ollama(system, messages)
-    except ModelError as exc:
-        return jsonify(error=str(exc)), exc.status
-
-    try:
-        raw = extract_json(text)
-        parsed = normalize(json.loads(raw))
-    except (ValueError, json.JSONDecodeError, TypeError):
+    # A cut-off or garbled reply is usually a one-off, so try once more
+    # before showing an error.
+    parsed = None
+    for _ in range(2):
+        try:
+            text = call_ollama(system, messages)
+        except ModelError as exc:
+            return jsonify(error=str(exc)), exc.status
+        try:
+            parsed = normalize(json.loads(extract_json(text)))
+            break
+        except (ValueError, json.JSONDecodeError, TypeError):
+            continue
+    if parsed is None:
         return jsonify(error="The tutor sent a reply I couldn't read. Try again."), 502
 
     # Store the cleaned JSON as the "raw" history entry so later turns replay it.
